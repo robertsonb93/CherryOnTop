@@ -46,16 +46,19 @@ map<vector<double>, double> ModelBasedLearning::PredictNextStates(stateType stat
 
 	map<stateType, double> response;
 	double total = 0;
+	auto TR_Begin = TR[state][action].begin();
+	auto TR_End = TR[state][action].end();
+	map<stateType, pair<double, double>>::iterator itr_cur;
 
-	for (map<stateType, double>::iterator itr_cur = T[state][action].begin(); itr_cur != T[state][action].end(); ++itr_cur)
+	for (itr_cur = TR_Begin ; itr_cur != TR_End; ++itr_cur)
 	{
-		total += itr_cur->second;
+		total += itr_cur->second.first;
 	}
 
 	//If ther is no map under state, or action then a new defaulted map with no entries will be created
-		for (map<stateType, double>::iterator itr_cur = T[state][action].begin(); itr_cur != T[state][action].end();++itr_cur)
+	for (itr_cur = TR_Begin; itr_cur != TR_End; ++itr_cur)
 	{
-			response[itr_cur->first] = itr_cur->second / total;
+			response[itr_cur->first] = itr_cur->second.first / total;
 	}
 		return response;
 }
@@ -67,9 +70,13 @@ vector<double> ModelBasedLearning::PredictNextState(stateType state, actionType 
 	stats.SetModelAccesses(stats.GetModelAccesses() + 1);
 	stateType ret;
 	int maxCount = -1;//Default for t table is at 0;
-	for (map<stateType, double>::iterator itr_cur = T[state][action].begin(); itr_cur != T[state][action].end(); ++itr_cur)
+	auto TR_Begin = TR[state][action].begin();
+	auto TR_End = TR[state][action].end();
+	map<stateType, pair<double, double>>::iterator itr_cur;
+
+	for (itr_cur = TR_Begin; itr_cur != TR_End; ++itr_cur)
 	{
-		if (itr_cur->second > maxCount)
+		if (itr_cur->second.first > maxCount)
 			ret = itr_cur->first;
 	}
 	return ret;
@@ -80,7 +87,7 @@ double ModelBasedLearning::PredictReward(stateType state, actionType action, sta
 	stats.SetModelAccesses(stats.GetModelAccesses() + 1);
 
 	//Trying to insert a new map into this. Will return the already in place value if its there.
-	return (R[state][action].insert(pair<stateType, double>(newState, defaultQ))).first->second;	
+	return (TR[state][action].insert(pair<stateType, pair<double, double>>(newState, pair<double, double>(0, defaultQ)))).first->second.second;
 }
 
 
@@ -91,15 +98,18 @@ double ModelBasedLearning::PredictReward(stateType state, actionType action, sta
 map<double, double> ModelBasedLearning::PredictReward(stateType state, actionType action)
 {
 	map<double, double> ret;
-	for (map<stateType, double>::iterator itr_cur = R[state][action].begin(); itr_cur != R[state][action].end(); ++itr_cur)
+	const auto & end = TR[state][action].end();
+
+
+	for (auto itr_cur = TR[state][action].begin(); itr_cur != end; ++itr_cur)
 	{
 		try
 		{//Look up the value in ret, and increment that value of if it is there
-			ret.at(itr_cur->second)++;
+			ret.at(itr_cur->second.second)++;
 		}
 		catch (out_of_range)
 		{//Initialize the non-existent number to one (we have seen it only once)
-			ret.at(itr_cur->second) = 1;
+			ret[itr_cur->second.second] = 1;
 		}
 	}
 	return ret;
@@ -145,8 +155,12 @@ double ModelBasedLearning::Update(const StateTransition& transition)
 	stateType NS(transition.getNewState());
 	actionType ACT(transition.getAction());
 
-	((T[OS][ACT].insert(pair<stateType, double>(NS, 0))).first->second)++; //will default it to 0 if it is not there, then will increment what is there
-	(R[OS][ACT].insert(pair<stateType, double>(NS, 0))).first->second += transition.getReward();
+	auto TR_it = TR[OS][ACT].insert(pair<stateType, pair<double, double>>(NS, pair<double, double>(0, 0))).first->second;
+	TR_it.first++;//The trans
+	TR_it.second += transition.getReward();
+
+	//((TR[OS][ACT].insert(pair<stateType, pair<double,double>(NS,(0,0)))).first->second.first)++; //will default it to 0 if it is not there, then will increment what is there
+	//(R[OS][ACT].insert(pair<stateType, double>(NS, 0))).first->second += transition.getReward();
 
 	//Update a predecessors so that they contain the new state. and the transition from the old
 	predecessors[NS][OS].insert(ACT);
@@ -185,7 +199,7 @@ double ModelBasedLearning::Update(const StateTransition& transition)
 				priorInsrt = pair<stateType,double>(iterPredecState->first,0);
 				for each  (actionType predact in iterPredecState->second)
 				{
-					valueTrans = (valueChange * T[iterPredecState->first][predact][iterMax->first]);
+					valueTrans = (valueChange * TR[iterPredecState->first][predact][iterMax->first].first);
 
 					auto pri = priority.insert(priorInsrt);
 					if (pri.first->second < valueTrans)
@@ -221,12 +235,15 @@ void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 	double P = 0;
 
 	//Do a single lookup for the end and begin of the T table;
-		const map<stateType, double>::iterator& T_end = T[state][action].end();
-		const map<stateType, double>::iterator& T_begin = T[state][action].begin();
-		map<stateType, double>::iterator T_iter;
+	map<stateType, pair<double, double>>* SAInterest = &TR[state][action];
+
+		const map<stateType, pair<double,double>>::iterator& T_end = (*SAInterest).end();
+		const map<stateType, pair<double,double>>::iterator& T_begin = (*SAInterest).begin();
+		map<stateType, pair<double,double>>::iterator T_iter;//T_iter.first is a state, second.first is transitions, second.second is reward
+
 	for (T_iter =T_begin; T_iter != T_end; ++T_iter)
 	{
-		P += T_iter->second;
+		P += T_iter->second.first;
 	}
 	if (!P)
 		return;
@@ -235,7 +252,7 @@ void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 	//This will only do the states that the T table has seen. 
 	double newQ = 0;
 	double maxQ(numeric_limits<double>::lowest());
-	map<stateType,double>* thisRPreState = &R[state][action]; //save on repeatedly doing lookups	
+	//map<stateType,double>* thisRPreState = &R[state][action]; //save on repeatedly doing lookups	
 	pair<unordered_map<stateType, map<actionType, double>>::iterator, bool> QPtr;
 	map<actionType, double>::iterator qEnd;
 		
@@ -254,8 +271,8 @@ void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 		else
 			maxQ = defaultQ;
 
-		double thisR = (*thisRPreState)[T_iter->first];
-		newQ += (T_iter->second / P) * (thisR + gamma * maxQ);
+		double thisR = (*SAInterest)[T_iter->first].second;
+		newQ += (T_iter->second.first / P) * (thisR + gamma * maxQ);
 	}
 		//Put the new value in the QTable
 		QTable[state][action] = newQ;

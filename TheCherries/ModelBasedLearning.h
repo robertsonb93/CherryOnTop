@@ -16,7 +16,7 @@ private:
 	//it could reference this define.
 	typedef vector<double>  stateType;
 	typedef vector<double> actionType;
-	typedef unordered_map<stateType, map<actionType, map<stateType, double>>>  SASTable;
+	typedef unordered_map<stateType, map<actionType, map<stateType, pair<double,double>>>>  SASTable;
 	typedef unordered_map<stateType, map<actionType, double>> QTableType;
 
 public:
@@ -49,8 +49,9 @@ private:
 	double defaultQ = 10, gamma = 0.9;
 	int c = 1;
 	int maxUpdates = 120;//1000;
-	SASTable T;
-	SASTable R;//was originally a histogram, now is just a double
+	//SASTable T;
+	//SASTable R;//was originally a histogram, now is just a double
+	SASTable TR;
 	QTableType QTable;
 	unordered_map<stateType, map<stateType, unordered_set<vector<double>>>> predecessors;//double<vector> = actiontype
 	map<stateType, double> priority;
