@@ -99,8 +99,6 @@ map<double, double> ModelBasedLearning::PredictReward(stateType state, actionTyp
 {
 	map<double, double> ret;
 	const auto & end = TR[state][action].end();
-
-
 	for (auto itr_cur = TR[state][action].begin(); itr_cur != end; ++itr_cur)
 	{
 		try
@@ -155,7 +153,7 @@ double ModelBasedLearning::Update(const StateTransition& transition)
 	stateType NS(transition.getNewState());
 	actionType ACT(transition.getAction());
 
-	auto TR_it = TR[OS][ACT].insert(pair<stateType, pair<double, double>>(NS, pair<double, double>(0, 0))).first->second;
+	auto & TR_it = TR[OS][ACT].insert(pair<stateType, pair<double, double>>(NS, pair<double, double>(0, 0))).first->second;
 	TR_it.first++;//The trans
 	TR_it.second += transition.getReward();
 
@@ -236,7 +234,6 @@ void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 
 	//Do a single lookup for the end and begin of the T table;
 	map<stateType, pair<double, double>>* SAInterest = &TR[state][action];
-
 		const map<stateType, pair<double,double>>::iterator& T_end = (*SAInterest).end();
 		const map<stateType, pair<double,double>>::iterator& T_begin = (*SAInterest).begin();
 		map<stateType, pair<double,double>>::iterator T_iter;//T_iter.first is a state, second.first is transitions, second.second is reward
@@ -282,7 +279,8 @@ void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 //When the priority has a number of zero priorities, this will attempt to remove, to make faster iteration.
 void ModelBasedLearning::cleanUpPriority()
 {
-		for (map<vector<double>, double>::iterator curIter = priority.begin(); curIter != priority.end(); )
+	const auto & end(priority.end());
+		for (map<vector<double>, double>::iterator curIter = priority.begin(); curIter != end;)
 		{
 			if (!(curIter->second))
 			{
@@ -299,17 +297,17 @@ void ModelBasedLearning::cleanUpPriority()
 //Simply iterate over the priority map and find what priority is currently the max
 map<vector<double>, double>::iterator ModelBasedLearning::findMaxPriority()
 {
-	map<vector<double>, double>::iterator iterMax = priority.begin(); //since we have to see all the elements of the map, iterator should be faster then look ups with []
-	auto end(priority.end());
+	//map<vector<double>, double>::iterator iterMax = priority.begin(); //since we have to see all the elements of the map, iterator should be faster then look ups with []
+	map<actionType,double>::iterator max = priority.begin();
+	const auto & end(priority.end());
 	for (map<vector<double>, double>::iterator curIter = priority.begin(); curIter != end; ++curIter)
 	{
-		if (curIter->second > iterMax->second)
+		if (curIter->second > max->second)
 		{
-			iterMax = curIter;
-			continue;
+			max = curIter;
 		}
 	}
-	return iterMax;
+	return max;
 }
 
 //Will take the maximum priority state, and run an update on it. this includes calling UpdateQ
@@ -318,11 +316,14 @@ double ModelBasedLearning::calcUpdate_value(const stateType& state)
 {
 	//Perform Update step on the highest priority, currently pointed to by the iterMax
 	vector<double> oldValues = Value(state, availableActions);
-	double maxOldValue = oldValues[0];
-	for (size_t j = 1; j < oldValues.size(); ++j)
+
+	int valSize = oldValues.size();
+	auto ovIt = oldValues.begin();
+	double maxOldValue = *ovIt++;
+	for (; ovIt != oldValues.end();++ovIt)
 	{
-		if (maxOldValue < oldValues[j])
-			maxOldValue = oldValues[j];
+		if (maxOldValue < *ovIt)
+			maxOldValue = *ovIt;
 	}
 
 
@@ -336,15 +337,15 @@ double ModelBasedLearning::calcUpdate_value(const stateType& state)
 
 	//Find out what the values in the Q-table have been changed to,
 	vector<double> newValues = Value(state, availableActions);
-
-	double maxnewValue = newValues[0];
-	for (size_t j = 1; j < oldValues.size(); ++j)
+	ovIt = newValues.begin();
+	double maxNewValue = *ovIt++;
+	for (; ovIt != newValues.end(); ++ovIt)
 	{
-		if (maxnewValue < newValues[j])
-			maxnewValue = newValues[j];
+		if (maxNewValue < *ovIt)
+			maxNewValue = *ovIt;
 	}
 
-	double valueChange = maxOldValue - maxnewValue;
+	double valueChange = maxOldValue - maxNewValue;
 	if (valueChange < 0)
 		valueChange *= -1;
 
