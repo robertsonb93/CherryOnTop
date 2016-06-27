@@ -39,8 +39,8 @@ namespace CherryOnTop {
 	public:
 		MyForm(void)
 		{
-			InitializeComponent();
-			stopAtThisTime = gcnew TimeSpan(99, 99, 99);
+			InitializeComponent(); 
+			
 			pictureBox1->Image = nullptr;
 			pictureBox1->Paint += gcnew PaintEventHandler(this, &MyForm::pictureBox1Paint);
 			resetCounters();
@@ -71,7 +71,8 @@ namespace CherryOnTop {
 	protected:
 
 	private: System::Windows::Forms::PictureBox^  pictureBox1;
-	private: System::Windows::Forms::NumericUpDown^  numericUpDown1;
+	private: System::Windows::Forms::NumericUpDown^  stepStop;
+
 	private: System::Windows::Forms::CheckBox^  checkBox1;
 	private: System::Windows::Forms::ComboBox^  avTypeBox;
 	private: System::Windows::Forms::ComboBox^  PolicyBox;
@@ -91,6 +92,10 @@ namespace CherryOnTop {
 	private: System::Windows::Forms::Label^  label5;
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::Label^  label7;
+	private: System::Windows::Forms::NumericUpDown^  timerStop;
+	private: System::Windows::Forms::Label^  stepStopLabel;
+	private: System::Windows::Forms::Label^  label8;
+	private: System::Windows::Forms::ComboBox^  stepTimerComboBox;
 
 
 
@@ -122,7 +127,7 @@ namespace CherryOnTop {
 			System::Windows::Forms::DataVisualization::Charting::Series^  series3 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 			this->runButton = (gcnew System::Windows::Forms::Button());
 			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
-			this->numericUpDown1 = (gcnew System::Windows::Forms::NumericUpDown());
+			this->stepStop = (gcnew System::Windows::Forms::NumericUpDown());
 			this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
 			this->avTypeBox = (gcnew System::Windows::Forms::ComboBox());
 			this->PolicyBox = (gcnew System::Windows::Forms::ComboBox());
@@ -142,11 +147,16 @@ namespace CherryOnTop {
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->label7 = (gcnew System::Windows::Forms::Label());
+			this->timerStop = (gcnew System::Windows::Forms::NumericUpDown());
+			this->stepStopLabel = (gcnew System::Windows::Forms::Label());
+			this->label8 = (gcnew System::Windows::Forms::Label());
+			this->stepTimerComboBox = (gcnew System::Windows::Forms::ComboBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUpDown1))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->stepStop))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chartCumulativeReward))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chartModelUse))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chartStepsToGoal))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->timerStop))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// runButton
@@ -169,17 +179,17 @@ namespace CherryOnTop {
 			this->pictureBox1->TabIndex = 1;
 			this->pictureBox1->TabStop = false;
 			// 
-			// numericUpDown1
+			// stepStop
 			// 
-			this->numericUpDown1->Location = System::Drawing::Point(426, 15);
-			this->numericUpDown1->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1000000, 0, 0, 0 });
-			this->numericUpDown1->Name = L"numericUpDown1";
-			this->numericUpDown1->Size = System::Drawing::Size(74, 20);
-			this->numericUpDown1->TabIndex = 2;
-			this->numericUpDown1->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
-			this->numericUpDown1->ThousandsSeparator = true;
-			this->numericUpDown1->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2000, 0, 0, 0 });
-			this->numericUpDown1->ValueChanged += gcnew System::EventHandler(this, &MyForm::numericUpDown1_ValueChanged);
+			this->stepStop->Location = System::Drawing::Point(414, 69);
+			this->stepStop->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1000000, 0, 0, 0 });
+			this->stepStop->Name = L"stepStop";
+			this->stepStop->Size = System::Drawing::Size(74, 20);
+			this->stepStop->TabIndex = 2;
+			this->stepStop->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+			this->stepStop->ThousandsSeparator = true;
+			this->stepStop->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2000, 0, 0, 0 });
+			this->stepStop->ValueChanged += gcnew System::EventHandler(this, &MyForm::numericUpDown1_ValueChanged);
 			// 
 			// checkBox1
 			// 
@@ -378,11 +388,58 @@ namespace CherryOnTop {
 			this->label7->TabIndex = 21;
 			this->label7->Text = L"GoalsReached";
 			// 
+			// timerStop
+			// 
+			this->timerStop->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 60, 0, 0, 0 });
+			this->timerStop->Location = System::Drawing::Point(498, 69);
+			this->timerStop->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1000000, 0, 0, 0 });
+			this->timerStop->Name = L"timerStop";
+			this->timerStop->Size = System::Drawing::Size(74, 20);
+			this->timerStop->TabIndex = 22;
+			this->timerStop->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+			this->timerStop->ThousandsSeparator = true;
+			this->timerStop->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 90, 0, 0, 0 });
+			// 
+			// stepStopLabel
+			// 
+			this->stepStopLabel->AutoSize = true;
+			this->stepStopLabel->Location = System::Drawing::Point(417, 53);
+			this->stepStopLabel->Name = L"stepStopLabel";
+			this->stepStopLabel->Size = System::Drawing::Size(71, 13);
+			this->stepStopLabel->TabIndex = 23;
+			this->stepStopLabel->Text = L"NumberSteps";
+			// 
+			// label8
+			// 
+			this->label8->AutoSize = true;
+			this->label8->Location = System::Drawing::Point(503, 53);
+			this->label8->Name = L"label8";
+			this->label8->Size = System::Drawing::Size(47, 13);
+			this->label8->TabIndex = 24;
+			this->label8->Text = L"Timer (s)";
+			// 
+			// stepTimerComboBox
+			// 
+			this->stepTimerComboBox->FormattingEnabled = true;
+			this->stepTimerComboBox->ImeMode = System::Windows::Forms::ImeMode::On;
+			this->stepTimerComboBox->Items->AddRange(gcnew cli::array< System::Object^  >(3) { L"Use Steps", L"Use Steps&Timer", L"Use Timer" });
+			this->stepTimerComboBox->Location = System::Drawing::Point(414, 95);
+			this->stepTimerComboBox->Name = L"stepTimerComboBox";
+			this->stepTimerComboBox->Size = System::Drawing::Size(121, 21);
+			this->stepTimerComboBox->Sorted = true;
+			this->stepTimerComboBox->TabIndex = 25;
+			this->stepTimerComboBox->Text = L"Use Steps&Timer";
+			this->stepTimerComboBox->SelectedIndexChanged += gcnew System::EventHandler(this, &MyForm::stepTimerComboBox_SelectedIndexChanged);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(584, 702);
+			this->Controls->Add(this->stepTimerComboBox);
+			this->Controls->Add(this->label8);
+			this->Controls->Add(this->stepStopLabel);
+			this->Controls->Add(this->timerStop);
 			this->Controls->Add(this->label7);
 			this->Controls->Add(this->label6);
 			this->Controls->Add(this->label5);
@@ -402,16 +459,17 @@ namespace CherryOnTop {
 			this->Controls->Add(this->PolicyBox);
 			this->Controls->Add(this->avTypeBox);
 			this->Controls->Add(this->checkBox1);
-			this->Controls->Add(this->numericUpDown1);
+			this->Controls->Add(this->stepStop);
 			this->Controls->Add(this->pictureBox1);
 			this->Controls->Add(this->runButton);
 			this->Name = L"MyForm";
 			this->Text = L"MyForm";
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUpDown1))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->stepStop))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chartCumulativeReward))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chartModelUse))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chartStepsToGoal))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->timerStop))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -421,12 +479,16 @@ namespace CherryOnTop {
 	private:
 		//Runtime Members ARE HERE//
 		GridWorldBase* world = new _DefaultWorld(); //Can point to any type of world. In the form though, we only want Gridworld
+		AgentBase* agentPtr = new _DefaultAgentType();
 
 		Bitmap^ bmap = nullptr; //Will be used for holding onto a modifiable bitmap of the displayed image, since the picbox->image, cant modify.
-		System::TimeSpan^ stopAtThisTime;
+
+		
+		//System::TimeSpan^ stopAtThisTime;
 		System::TimeSpan cumulativeTime;
 		int cumulativeIterations;
-		bool doCompareTime = false;
+		bool doCompareTime = true;
+		bool doCompareSteps = true;
 		bool mapLoaded = false;
 
 		//Used for Determining if a new chart is needed at run time.
@@ -446,11 +508,11 @@ namespace CherryOnTop {
 
 		void loadMapButton_Click(System::Object^  sender, System::EventArgs^  e);
 		void runButton_Click(System::Object^  sender, System::EventArgs^  e);
-		//void checkBox1_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
 		void avTypeBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 		void PolicyBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 		void worldBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 		void numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e);
+		void stepTimerComboBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 
 		vector<vector<double>> BitmapToVector(Bitmap^ bmapPtr, vector<double>& start);
 		void VectorToBitmap(Bitmap^ bmpPtr, const vector<vector<double>>& vecMap);
@@ -460,6 +522,10 @@ namespace CherryOnTop {
 		void ChartNewSeries();
 		ActionValue* getAVBox();
 		PolicyBase* getPolicyBox();
+
+		void RunSteps(PerformanceStats& tempStats, int& iteration, System::Diagnostics::Stopwatch^ sw);
+
+
 
 
 };

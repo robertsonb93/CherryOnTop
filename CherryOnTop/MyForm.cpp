@@ -29,114 +29,112 @@ void CherryOnTop::MyForm::loadMapButton_Click(System::Object ^ sender, System::E
 	}
 }
 
+//Is used when the Run button is clicked, mostly to help clean up the code and make the runButtonClicked function smaller 
+inline void CherryOnTop::MyForm::RunSteps(PerformanceStats& tempStats, int& iteration, System::Diagnostics::Stopwatch^ sw)
+{
+	tempStats = world->StepAgent();
+
+	++iteration;
+	//Update the actionIterator
+	actionCountDisplay->Text = iteration.ToString();
+	actionCountDisplay->Refresh();
+
+	//Update the timers
+	timeCountDisplay->Text = sw->Elapsed.TotalSeconds.ToString();
+	timeCountDisplay->Refresh();
+
+	//Update the Charts with performance Stats		
+	chartCumulativeReward->Series[((chartCumulativeReward->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetCumulativeReward());
+	chartModelUse->Series[((chartModelUse->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetModelAccesses() + tempStats.GetModelUpdates());
+
+}
+
 //Button that will run the trials using the selected or default settings
 void CherryOnTop::MyForm::runButton_Click(System::Object ^ sender, System::EventArgs ^ e)
 {
-	runButton->Enabled = false;//So you dont end up mashing the button and queing a bunch of runs
+	runButton->Enabled = false;//So you don't end up mashing the button and queuing a bunch of runs
 	if (polChanged || actChanged || worldChanged)//Create a new series in the charts so that they are displayed as a parallel line instead of a sequential
 		ChartNewSeries();
 
+
+	System::TimeSpan^ stopAtThisTime;
+	int stopAtThisStep;
 	polChanged = actChanged = worldChanged = false;
-	
+
+	if (doCompareTime)
+		stopAtThisTime = gcnew System::TimeSpan(0, 0, timerStop->Value.ToInt32(timerStop->Value));
+	if (doCompareSteps)
+		stopAtThisStep = stepStop->Value.ToInt32(stepStop->Value);
+
+
 	PerformanceStats tempStats;
-	System::Diagnostics::Stopwatch sw;
-	sw.Start();
+	System::Diagnostics::Stopwatch^ sw = gcnew System::Diagnostics::Stopwatch();
+	sw->Start();
 	int iteration = 0;
-	if (checkBox1->Checked) //Notice the duplicate code, but instead of putting the comparison in the loops(reducing code)
-							//We put the comparison outside as it only needs to be known once to display(faster iterations)
-		if (doCompareTime)
-		{		
-			while (sw.Elapsed.TotalMilliseconds < stopAtThisTime->TotalMilliseconds)
+
+
+	if (checkBox1->Checked) //Notice the duplicate code below, but instead of putting the comparison in the loops(reducing code)
+	{					//We put the comparison outside as it only needs to be known once to display(faster iterations)
+
+		if (doCompareSteps && doCompareTime)
+			while (sw->ElapsedMilliseconds < stopAtThisTime->TotalMilliseconds && iteration < stopAtThisStep)
 			{
-				tempStats = world->StepAgent();
-				
+				RunSteps(tempStats, iteration, sw);
 				//Update the pictureBox
 				VectorToBitmap(bmap, world->ShowState());
 				pictureBox1->Image = bmap;
 				pictureBox1->Invalidate();
 				pictureBox1->Update();
-				
-				iteration++;
-				//Update the actionIterator
-				actionCountDisplay->Text = iteration.ToString();
-				actionCountDisplay->Refresh();
-			
-				//Update the timers
-				timeCountDisplay->Text = sw.Elapsed.TotalSeconds.ToString();			
-				timeCountDisplay->Refresh();				
-
-				//Update the Charts with performance Stats		
-				chartCumulativeReward->Series[((chartCumulativeReward->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetCumulativeReward());
-				chartModelUse->Series[((chartModelUse->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetModelAccesses() + tempStats.GetModelUpdates());
-				
+				//Run Code
 			}
-		}
-		else for (iteration; iteration < numericUpDown1->Value; iteration++)
+		else if (doCompareSteps)
+			while (iteration < stopAtThisStep)
 			{
-				tempStats = world->StepAgent();
-
+				RunSteps(tempStats, iteration, sw);
 				//Update the pictureBox
-				VectorToBitmap(bmap,world->ShowState());
+				VectorToBitmap(bmap, world->ShowState());
 				pictureBox1->Image = bmap;
 				pictureBox1->Invalidate();
 				pictureBox1->Update();
-
-				//Update the actionIterator
-				actionCountDisplay->Text = (iteration+1).ToString();
-				actionCountDisplay->Refresh();
-
-				//Update the timers
-				timeCountDisplay->Text = sw.Elapsed.TotalSeconds.ToString();
-				timeCountDisplay->Refresh();		
-
-
-				//Update the Charts with performance Stats		
-				chartCumulativeReward->Series[((chartCumulativeReward->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetCumulativeReward());
-				chartModelUse->Series[((chartModelUse->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetModelAccesses() + tempStats.GetModelUpdates());
 			}
-	else //We are not going to display the actions
-		if (doCompareTime)
-		
-			while (sw.Elapsed.TotalMilliseconds < stopAtThisTime->TotalMilliseconds)
-			{
-				tempStats = world->StepAgent();
-
-				iteration++;
-				//Update the actionIterator
-				actionCountDisplay->Text = iteration.ToString();
-				actionCountDisplay->Refresh();
-
-				//Update the timers
-				timeCountDisplay->Text = sw.Elapsed.TotalSeconds.ToString();
-				timeCountDisplay->Refresh();
-
-
-				//Update the Charts with performance Stats		
-				chartCumulativeReward->Series[((chartCumulativeReward->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetCumulativeReward());
-				chartModelUse->Series[((chartModelUse->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetModelAccesses() + tempStats.GetModelUpdates());
-
-				
-			}
-		else for (iteration; iteration < numericUpDown1->Value; iteration++)
+		else if (doCompareTime)
 		{
-			tempStats = world->StepAgent();
-
-			//Update the actionIterator
-			actionCountDisplay->Text = (iteration+1).ToString();
-			actionCountDisplay->Refresh();
-
-			//Update the timers
-			timeCountDisplay->Text = sw.Elapsed.TotalSeconds.ToString();
-			timeCountDisplay->Refresh();
-
-
-			//Update the Charts with performance Stats		
-			chartCumulativeReward->Series[((chartCumulativeReward->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetCumulativeReward());
-			chartModelUse->Series[((chartModelUse->Series->Count) - 1).ToString()]->Points->AddY(tempStats.GetModelAccesses() + tempStats.GetModelUpdates());
+			while (sw->ElapsedMilliseconds < stopAtThisTime->TotalMilliseconds)
+			{
+				RunSteps(tempStats, iteration, sw);
+				//Update the pictureBox
+				VectorToBitmap(bmap, world->ShowState());
+				pictureBox1->Image = bmap;
+				pictureBox1->Invalidate();
+				pictureBox1->Update();
+			}
 		}
+	}
+
+	else//WE are not displaying the individual steps.
+	{
+		if (doCompareSteps && doCompareTime)
+			while (sw->ElapsedMilliseconds < stopAtThisTime->TotalMilliseconds && iteration < stopAtThisStep)
+			{
+				RunSteps(tempStats, iteration, sw);
+
+			}
+		else if (doCompareSteps)
+			while (iteration < stopAtThisStep)
+			{
+				RunSteps(tempStats, iteration, sw);
+			}
+		else if (doCompareTime)
+		{
+			while (sw->ElapsedMilliseconds < stopAtThisTime->TotalMilliseconds)
+			{
+				RunSteps(tempStats, iteration, sw);
+			}
+		}
+	}
 
 
-	sw.Stop();//We are done running the trials.
+	sw->Stop();//We are done running the trials.
 
 	//Do the chart for steps to goal and update the map and other values
 	chartStepsToGoal->Series[((chartStepsToGoal->Series->Count)-1).ToString()]->Points->Clear();
@@ -147,7 +145,7 @@ void CherryOnTop::MyForm::runButton_Click(System::Object ^ sender, System::Event
 		chartStepsToGoal->Series[((chartStepsToGoal->Series->Count) - 1).ToString()]->Points->Add(d);
 	}
 
-	cumulativeTime = cumulativeTime.Add(sw.Elapsed);
+	cumulativeTime = cumulativeTime.Add(sw->Elapsed);
 	cumulativeIterations += iteration;
 
 	VectorToBitmap(bmap, world->ShowState());
@@ -167,11 +165,11 @@ void CherryOnTop::MyForm::runButton_Click(System::Object ^ sender, System::Event
 	runButton->Enabled = true;
 }
 
-//The dropdown box for the actionvalue, clicking it and changing will cause this function to be called
+//The dropdown box for the action-value, clicking it and changing will cause this function to be called
 //Furthermore this will start a new series in the charts
 void CherryOnTop::MyForm::avTypeBox_SelectedIndexChanged(System::Object ^ sender, System::EventArgs ^ e)
 {	
-	world->AddAgent(getPolicyBox(), getAVBox());//The news' from these functions will be aquired and cleaned up by agent etc..
+	world->AddAgent(getPolicyBox(), getAVBox());//The news' from these functions will be acquired and cleaned up by agent etc..
 	resetCounters();
 	actChanged = true;
 }
@@ -410,6 +408,8 @@ PolicyBase*  CherryOnTop::MyForm::getPolicyBox()
 	}
 }
 
+
+
 //function will reset the charts to have a new series started when a factor of the agent is changed such as the action value, the world, or the policy
 //This function can be modified if a different style of charting is desired.
 void  CherryOnTop::MyForm::ChartNewSeries()
@@ -426,4 +426,29 @@ void  CherryOnTop::MyForm::ChartNewSeries()
 	chartStepsToGoal->Series->Add(stepsCount);
 	chartStepsToGoal->Series[stepsCount]->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
 
+}
+
+//This Combo Box is used to determine what the stopping condition is for the test whether it be steps, the timer or both.
+void CherryOnTop::MyForm::stepTimerComboBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e)
+{
+
+	if (stepTimerComboBox->SelectedItem == "Use Steps")
+	{
+		doCompareTime = false;
+		doCompareSteps = true;
+	}
+	else if (stepTimerComboBox->SelectedItem == "Use Timer")
+	{
+		doCompareSteps = false;
+		doCompareTime = true;
+	}
+	else //If not either above then we are using both
+	{
+		doCompareSteps = true;
+		doCompareTime = true;
+	}
+
+	//For clarity while using we will disable the numeric up-down of whatever we aren't using, and enable what we are
+	stepStop->Enabled = doCompareSteps;
+	timerStop->Enabled = doCompareTime;
 }
