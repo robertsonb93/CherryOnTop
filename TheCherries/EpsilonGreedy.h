@@ -4,17 +4,7 @@
 
 #include "stdafx.h"
 #include "PolicyBase.h"
-//#include <random>
-//#include <time.h>
 
-#if defined _EXPORT
-#define  _declspec(export)
-#else
-#define  _declspec(import)
-#endif
-
-extern "C"
-{
 	//E-Greedy Policy class derived from PolicyBase
 	//Uses a default Epsilon of 0.8 unless otherwise set in the constructor or setEpsilon
 	using namespace std;
@@ -30,7 +20,7 @@ extern "C"
 
 		//Members//
 	private:
-		double defaultE = 0.8;
+		double defaultE = 0.95;
 	};
-}
+
 #endif

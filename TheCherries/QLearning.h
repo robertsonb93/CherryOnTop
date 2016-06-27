@@ -21,8 +21,6 @@
 		 PerformanceStats GetStats();
 		 void SetStats(PerformanceStats& PS);
 
-	private:
-		void ensureExists(const vector<double>& state);
 
 		//Members//
 	private:
@@ -30,9 +28,10 @@
 		double gamma;
 		double defaultQ;
 		//First element is the statevector, this returns a map that given an action returns the q-value
-		map<vector<double>, map<vector<double>, double>> table;
+		unordered_map<vector<double>, map<vector<double>, double>> table;
 		vector<vector<double>> availableActions;
 		PerformanceStats stats;
+		map<vector<double>, double> defaultMap;
 
 
 

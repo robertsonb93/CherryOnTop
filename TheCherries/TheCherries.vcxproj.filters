@@ -105,8 +105,11 @@
     <ClInclude Include="ModelBasedLearning.h">
       <Filter>Header Files\ActionValue</Filter>
     </ClInclude>
+    <ClInclude Include="AgentMulti.h">
+      <Filter>Header Files\Agent</Filter>
+    </ClInclude>
     <ClInclude Include="HashVecDoubles.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Agent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +140,9 @@
     <ClCompile Include="ModelBasedLearning.cpp">
       <Filter>Source Files\ActionValue</Filter>
     </ClCompile>
+    <ClCompile Include="AgentMulti.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="TheCherries.def">
@@ -144,6 +150,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="StateVects.natvis" />
+    <Natvis Include="StateVects.natvis">
+      <Filter>Resource Files</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>

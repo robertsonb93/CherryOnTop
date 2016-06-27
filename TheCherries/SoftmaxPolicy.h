@@ -4,18 +4,7 @@
 
 #include "stdafx.h"
 #include "PolicyBase.h"
-//#include <random>
-//#include <time.h>
 
-//
-#if defined _EXPORT
-#define  _declspec(export)
-#else
-#define  _declspec(import)
-#endif
-
-extern "C"
-{
 	class  SoftmaxPolicy : public PolicyBase
 	{
 	public:
@@ -31,6 +20,6 @@ extern "C"
 		//Members//
 		double defaultT = 1;
 	};
-}
+
 #endif
 

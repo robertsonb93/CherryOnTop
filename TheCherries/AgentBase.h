@@ -11,13 +11,6 @@
 #include "ActionValue.h"
 #include "PolicyBase.h"
 
-
-#if defined _EXPORT
-#define  _declspec(export)
-#else
-#define  _declspec(import)
-#endif
-
 	//Base class for agents for polymorphism
 	class  AgentBase abstract
 	{

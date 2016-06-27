@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DirectedGraph ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="AUXILLIARY" Category="Comment" Bounds="262.542142130534,-611.591899462891,82.2966666666667,25.96" UseManualLocation="True">
+    <Node Id="AUXILLIARY" Category="Comment" Bounds="262.542142130534,-611.591899462891,81.8366666666667,25.96" UseManualLocation="True">
       <Category Ref="Category6" />
     </Node>
-    <Node Id="ActionValue1" Category="Comment" Bounds="-241.811734331217,-314.792114290873,83.61,25.96" Label="ActionValue" UseManualLocation="True">
+    <Node Id="ActionValue1" Category="Comment" Bounds="30.1112454111168,-292.005272413024,82.73,25.96" Label="ActionValue" UseManualLocation="True">
       <Category Ref="Category4" />
     </Node>
     <Node Id="Agent1" Category="Comment" Bounds="-384.357603759766,-396.970745595975,51.9400000000001,25.96" Label="Agent" UseManualLocation="True">
       <Category Ref="Category4" />
     </Node>
-    <Node Id="AgentMulti" Category="Comment" Bounds="-447.236019592285,-254.012897949219,79.3866666666667,25.96" UseManualLocation="True">
+    <Node Id="AgentMulti" Category="Comment" Bounds="-365.505564935273,-224.23753535205,79.3866666666667,25.96" UseManualLocation="True">
       <Category Ref="Category1" />
     </Node>
-    <Node Id="AgentSingle" Category="Comment" Bounds="-337.849352925618,-253.208286743164,84.26,25.96" UseManualLocation="True">
-      <Category Ref="Category1" />
+    <Node Id="AgentSingle" Category="Comment" Bounds="-245.48503872561,-224.344953697888,84.26,25.96" UseManualLocation="True">
+      <Category Ref="Category4" />
     </Node>
     <Node Id="CompleteBase" Category="Comment" Bounds="373.969555206299,-248.936573486328,95.7333333333333,25.96" UseManualLocation="True">
       <Category Ref="Category4" />
@@ -23,13 +23,12 @@
       <Category Ref="Category2" />
     </Node>
     <Node Id="Epsilon_Greedy" Category="Comment" Bounds="-519.571084662543,1.22327127365142,100.663333333333,25.96" UseManualLocation="True">
-      <Category Ref="Category1" />
       <Category Ref="Category7" />
     </Node>
     <Node Id="Form" Category="Category7" Bounds="-378.666745355029,-685.164455409119,50,25.96" UseManualLocation="True">
       <Category Ref="Category1" />
     </Node>
-    <Node Id="GridWorld" Category="Comment" Bounds="-216.594879968129,-546.745883085459,74.7666666666667,25.96" UseManualLocation="True">
+    <Node Id="GridWorld" Category="Comment" Bounds="-216.594879968129,-546.745883085459,74.2966666666667,25.96" UseManualLocation="True">
       <Category Ref="Category1" />
     </Node>
     <Node Id="IncompeteBase" Category="Category10" Bounds="371.180129801433,-189.320721130371,100.923333333333,25.96" UseManualLocation="True" />
@@ -41,85 +40,82 @@
       <Category Ref="Category4" />
       <Category Ref="Category5" />
     </Node>
-    <Node Id="ModelBasedActionValue" Category="Comment" Bounds="118.558546782399,-138.263670323487,120.456666666667,25.96" Label="State- ModelBased" UseManualLocation="True">
+    <Node Id="ModelBasedActionValue" Category="Comment" Bounds="118.558546782399,-138.263670323487,120.07,25.96" Label="State- ModelBased" UseManualLocation="True">
       <Category Ref="Category4" />
     </Node>
-    <Node Id="ModelBased_Regular" Category="Category1" Bounds="277.74218460083,441.9584765625,130.956666666667,25.96" UseManualLocation="True" />
-    <Node Id="ModelBased_Tracking" Category="Category1" Bounds="112.445517934163,444.173778076172,135.296666666667,25.96" UseManualLocation="True" />
-    <Node Id="ModelFreeActionValue" Category="Comment" Bounds="-32.0766912891533,-139.673325042725,114.906666666667,25.96" Label="State - ModelFree" UseManualLocation="True">
+    <Node Id="ModelBased_Regular" Category="Category2" Bounds="277.74218460083,441.9584765625,130.606666666667,25.96" UseManualLocation="True" />
+    <Node Id="ModelBased_Tracking" Category="Category1" Bounds="112.445517934163,444.173778076172,134.253333333333,25.96" UseManualLocation="True" />
+    <Node Id="ModelFreeActionValue" Category="Comment" Bounds="-32.0766912891533,-139.673325042725,114.52,25.96" Label="State - ModelFree" UseManualLocation="True">
       <Category Ref="Category1" />
       <Category Ref="Category2" />
       <Category Ref="Category4" />
       <Category Ref="Category7" />
     </Node>
-    <Node Id="MultiResolutionRL" Category="Comment" Bounds="463.722910628352,47.4657034006858,119.626666666667,25.96" Label="MultiResolution RL" UseManualLocation="True">
+    <Node Id="MultiResolutionRL" Category="Comment" Bounds="463.722910628352,47.4657034006858,119.276666666667,25.96" Label="MultiResolution RL" UseManualLocation="True">
       <Category Ref="Category1" />
       <Category Ref="Category10" />
       <Category Ref="Category5" />
     </Node>
-    <Node Id="MultiResolution_Regular" Category="Comment" Bounds="601.185384320546,442.058488632375,148.99,25.96" UseManualLocation="True">
+    <Node Id="MultiResolution_Regular" Category="Comment" Bounds="464.464333053451,251.734501543743,148.29,25.96" UseManualLocation="True">
       <Category Ref="Category1" />
     </Node>
     <Node Id="Optimal" Category="Comment" Bounds="-620.774516402825,-1.45737312316895,62.4233333333334,25.96" UseManualLocation="True">
+      <Category Ref="Category7" />
+    </Node>
+    <Node Id="OutputPaths" Category="Comment" Bounds="-531.95772578866,-541.60795297219,86.1800000000001,25.96" UseManualLocation="True">
       <Category Ref="Category1" />
       <Category Ref="Category7" />
     </Node>
-    <Node Id="OutputPaths" Category="Comment" Bounds="-586.646146295498,-677.751373360222,86.5900000000001,25.96" UseManualLocation="True">
-      <Category Ref="Category1" />
-      <Category Ref="Category7" />
-    </Node>
-    <Node Id="PathFinder" Category="Comment" Bounds="653.175384320546,-12.6518158721924,76.7566666666667,25.96" UseManualLocation="True">
+    <Node Id="PathFinder" Category="Comment" Bounds="683.557840157678,165.085550775031,76.3466666666668,25.96" UseManualLocation="True">
       <Category Ref="Category1" />
     </Node>
-    <Node Id="PerformanceStats" Category="Comment" Bounds="365.282149829001,-540.053423028364,112.89,25.96" UseManualLocation="True">
+    <Node Id="PerformanceStats" Category="Comment" Bounds="365.282149829001,-540.053423028364,112.06,25.96" UseManualLocation="True">
       <Category Ref="Category2" />
     </Node>
-    <Node Id="Policy1" Category="Comment" Bounds="-605.717592138101,-300.471985942078,50.9133333333334,25.96" Label="Policy" UseManualLocation="True">
+    <Node Id="Policy1" Category="Comment" Bounds="-605.717592138101,-300.471985942078,50.47,25.96" Label="Policy" UseManualLocation="True">
       <Category Ref="Category1" />
-      <Category Ref="Category7" />
+      <Category Ref="Category4" />
     </Node>
-    <Node Id="PriorityQueue" Category="Comment" Bounds="759.932050987212,-64.6119160461426,92.9633333333334,25.96" UseManualLocation="True">
+    <Node Id="PriorityQueue" Category="Comment" Bounds="878.423628752028,163.256502732349,92.9633333333334,25.96" UseManualLocation="True">
       <Category Ref="Category1" />
     </Node>
     <Node Id="QLearning" Category="Comment" Bounds="-23.4026371765137,40.138860244751,74.8066666666667,25.96" UseManualLocation="True">
-      <Category Ref="Category1" />
       <Category Ref="Category7" />
     </Node>
     <Node Id="SoftMax" Category="Comment" Bounds="-718.391183069492,-0.289587423782411,63.6166666666667,25.96" UseManualLocation="True">
-      <Category Ref="Category1" />
       <Category Ref="Category7" />
     </Node>
-    <Node Id="StateTransition" Category="Comment" Bounds="195.840864921648,-526.088124844294,99.04,25.96" UseManualLocation="True">
+    <Node Id="StateTransition" Category="Comment" Bounds="189.764373754222,-544.317598346573,97.61,25.96" UseManualLocation="True">
       <Category Ref="Category6" />
     </Node>
-    <Node Id="World" Category="Category10" Bounds="-377.594883626302,-541.785783085459,52.3866666666668,25.96" UseManualLocation="True" />
+    <Node Id="World" Category="Category10" Bounds="-377.594883626302,-541.785783085459,51.9166666666667,25.96" UseManualLocation="True" />
   </Nodes>
   <Links>
-    <Link Source="AUXILLIARY" Target="StateTransition" Bounds="259.287565260492,-585.631899462891,35.5481158014288,52.1090069579866" />
-    <Link Source="ActionValue1" Target="Agent1" Bounds="-325.670684701588,-367.015004752788,100.647910985427,52.2228904619154" />
-    <Link Source="Agent1" Target="Interpretor" Bounds="-332.417603759766,-427.459785014306,84.6702507195648,33.2657879252675" />
-    <Link Source="Agent1" Target="World" Bounds="-357.761432812594,-506.836237308003,5.30004497814684,109.865499392964" />
-    <Link Source="AgentMulti" Target="Agent1" Bounds="-403.079601401262,-362.499802429677,37.3024854117356,108.486904480458" />
-    <Link Source="AgentSingle" Target="Agent1" Bounds="-349.133030697135,-362.760528194425,47.7554972856075,109.552241451261" />
-    <Link Source="Epsilon_Greedy" Target="Policy1" Bounds="-572.376227603438,-266.065723540829,98.3602705915627,267.288994814481" />
-    <Link Source="GridWorld" Target="World" Bounds="-316.211948664879,-532.689019924257,99.6170686967496,2.86956624627078" />
-    <Link Source="Interpretor" Target="World" Bounds="-321.504787569981,-511.272921333434,93.038362496747,54.562052835105" />
-    <Link Source="ModelBased" Target="ModelBasedActionValue" Bounds="186.245796040054,-103.801590217091,53.3236425650242,153.574966224171" />
-    <Link Source="ModelBasedActionValue" Target="ActionValue1" Bounds="-163.996689163584,-285.030423686298,314.931167677512,146.766753362811" />
-    <Link Source="ModelBased_Regular" Target="ModelBased" Bounds="249.563440577465,84.458880583569,90.3757391203033,357.499595978931" />
-    <Link Source="ModelBased_Tracking" Target="ModelBased" Bounds="182.199559483765,84.6172340853718,58.3298281120468,359.5565439908" />
-    <Link Source="ModelFreeActionValue" Target="ActionValue1" Bounds="-176.194156659724,-283.310174006849,184.865131437057,143.636848964124" />
-    <Link Source="MultiResolutionRL" Target="ModelBasedActionValue" Bounds="210.803578652211,-108.035077602217,288.639294115718,155.500781002903" />
-    <Link Source="MultiResolution_Regular" Target="MultiResolutionRL" Bounds="531.778787867256,81.8231179328669,138.896864953451,360.235370699508" />
-    <Link Source="Optimal" Target="Policy1" Bounds="-589.159060182806,-265.5163376347,8.21450318481698,264.058964511531" />
-    <Link Source="OutputPaths" Target="Form" Bounds="-500.056146295498,-670.855965050792,112.396266086126,4.39257386667009" />
-    <Link Source="PathFinder" Target="MultiResolutionRL" Bounds="568.286868620238,13.3081841278076,86.9901224670389,31.1255147993885" />
-    <Link Source="PerformanceStats" Target="AUXILLIARY" Bounds="332.803895485774,-580.967131653498,67.5065830689697,40.9137086251342" />
-    <Link Source="Policy1" Target="Agent1" Bounds="-554.806325527824,-369.116305662929,162.218904414196,70.553420761121" />
-    <Link Source="PriorityQueue" Target="PathFinder" Bounds="728.446538257378,-38.6519160461426,49.2743401793151,22.2906116291357" />
-    <Link Source="QLearning" Target="ModelFreeActionValue" Bounds="14.8218850956108,-104.731282629847,9.16531270336775,144.870142874598" />
-    <Link Source="SoftMax" Target="Policy1" Bounds="-681.985449676168,-266.028406061966,94.1223159282748,265.738818638184" />
-    <Link Source="World" Target="Form" Bounds="-353.319507911127,-650.205578392494,1.71289063414321,108.419795307035" />
+    <Link Source="AUXILLIARY" Target="StateTransition" Bounds="257.337746556377,-585.631899462891,33.6025468139611,34.8366385078892" />
+    <Link Source="ActionValue1" Target="Agent1" Bounds="-323.674485806312,-375.514390685109,353.785720242347,86.3884751347165" />
+    <Link Source="Agent1" Target="Interpretor" Bounds="-332.417603759766,-427.459785380866,84.6702463278297,33.2657819227504" />
+    <Link Source="Agent1" Target="World" Bounds="-357.78249619968,-506.835546935668,5.12172741741131,109.864801339693" />
+    <Link Source="AgentMulti" Target="Agent1" Bounds="-354.271844831217,-362.166643360892,26.0117438820255,137.929108008842" />
+    <Link Source="AgentSingle" Target="Agent1" Bounds="-340.716871419661,-364.3147248764,125.70469868341,139.969765159604" />
+    <Link Source="Epsilon_Greedy" Target="Policy1" Bounds="-572.582893702089,-266.067736140178,98.5573998040197,267.291007413829" />
+    <Link Source="GridWorld" Target="World" Bounds="-316.681948664879,-532.695789327099,100.08706869675,2.88310505195341" />
+    <Link Source="Interpretor" Target="World" Bounds="-321.700720737523,-511.278403758297,93.1984413820386,54.5675352599685" />
+    <Link Source="ModelBased" Target="ModelBasedActionValue" Bounds="186.073605638829,-103.804301582212,53.4824873691148,153.577677589292" />
+    <Link Source="ModelBasedActionValue" Target="ActionValue1" Bounds="85.6648502119444,-258.660879307809,83.8850639238434,120.397208984322" />
+    <Link Source="ModelBased_Regular" Target="ModelBased" Bounds="249.553988487963,84.4598050591787,90.2159831177502,357.498671503321" />
+    <Link Source="ModelBased_Tracking" Target="ModelBased" Bounds="181.69506124111,84.6153697278915,58.8057123188703,359.558408348281" />
+    <Link Source="ModelFreeActionValue" Target="ActionValue1" Bounds="29.1278674770315,-257.434122384192,35.786932624514,117.760797341467" />
+    <Link Source="MultiResolutionRL" Target="ModelBasedActionValue" Bounds="210.611621350796,-108.035253531267,288.654970162251,155.500956931953" />
+    <Link Source="MultiResolution_Regular" Target="MultiResolutionRL" Bounds="525.000122763179,82.4007328694292,12.6402721267128,169.333782816606" />
+    <Link Source="Optimal" Target="Policy1" Bounds="-589.168682566495,-265.516132844183,8.01874375531747,264.058759721014" />
+    <Link Source="OutputPaths" Target="Form" Bounds="-476.643205567482,-652.652682597809,104.581508822041,111.044722392731" />
+    <Link Source="PathFinder" Target="MultiResolutionRL" Bounds="552.993933396464,78.0158684800396,146.846022389632,87.0696822949914" />
+    <Link Source="PerformanceStats" Target="AUXILLIARY" Bounds="332.537082666635,-580.961779595043,67.39196244026,40.9083565666792" />
+    <Link Source="Policy1" Target="Agent1" Bounds="-555.247592138101,-369.129893152925,162.657260151889,70.6734715986489" />
+    <Link Source="PriorityQueue" Target="PathFinder" Bounds="768.904142154745,176.654947761817,109.519486597283,0.985934629350083" />
+    <Link Source="QLearning" Target="ModelFreeActionValue" Bounds="14.8079290521833,-104.730679190121,9.00951138428407,144.869539434872" />
+    <Link Source="SoftMax" Target="Policy1" Bounds="-681.995034626343,-266.026435892786,93.9253874145418,265.736848469004" />
+    <Link Source="World" Target="Form" Bounds="-353.355528524057,-650.205357506951,1.53518568036617,108.419574421492" />
   </Links>
   <Categories>
     <Category Id="Category1" Label="Category 1" Background="#FFE51400" IsTag="True" />
@@ -149,6 +145,10 @@
     <Property Id="ZoomLevel" DataType="System.String" />
   </Properties>
   <Styles>
+    <Style TargetType="Node" GroupLabel="Category 3" ValueLabel="Has category">
+      <Condition Expression="HasCategory('Category3')" />
+      <Setter Property="Background" Value="#FF3EBCED" />
+    </Style>
     <Style TargetType="Node" GroupLabel="Category 4" ValueLabel="Has category">
       <Condition Expression="HasCategory('Category4')" />
       <Setter Property="Background" Value="#FF1BA1E2" />

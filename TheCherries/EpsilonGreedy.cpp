@@ -24,29 +24,26 @@ EpsilonGreedy::~EpsilonGreedy()
 //Otherwise selects the optimal action
 std::vector<double> EpsilonGreedy::selectAction(std::vector<std::vector<double>>& availableActions, std::vector<double>& values, std::vector<double>& params)
 {
-	double randVal = (rand() % 100); // put the value between 0-1
+	double randVal = ((double)rand()/RAND_MAX); // put the value between 0-1
 	
 	if (randVal < defaultE)//If the value is below epsilon, then use the optimal action
 	{
-		vector<double> bestAction = availableActions[0];
-		double expectedReward = values[0];
-		for (unsigned int i = 0; i < values.size(); i++)
+		auto end = values.end();
+		int i = 1, c = 0;
+		auto it = values.begin();
+		for (auto newIt = values.begin() + 1; newIt != end; ++newIt, i++)
 		{
-			if (values[i] > expectedReward)
+			if (*it < *newIt)
 			{
-				expectedReward = values[i];
-				bestAction = availableActions[i];
+				c = i;
+				it = newIt;
 			}
 		}
-		return bestAction;
+		return availableActions[c];
 	}
 	else //Randomly select a value
 	{
-		randVal = (rand() % availableActions.size());//Create a random index value
-		if (randVal < 0 || randVal >= availableActions.size())
-			throw logic_error::exception("Not actually Logic_Error but IDC, PolicyBase::EpsilonGreedy::SelectAction::randVal is not being modified properly");
-
-		return availableActions[(unsigned int)randVal];
+		return availableActions[(unsigned int)rand() % availableActions.size()];
 	}
 }
 

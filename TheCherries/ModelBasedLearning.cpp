@@ -4,7 +4,7 @@
 
 
 
-ModelBasedLearning::ModelBasedLearning(const vector<vector<double>> AvailActions, const vector<double> StartState)
+ModelBasedLearning::ModelBasedLearning(const vector<vector<double>>& AvailActions, const vector<double>& StartState)
 {
 	availableActions = AvailActions;
 	startState = StartState;
@@ -16,7 +16,7 @@ ModelBasedLearning::ModelBasedLearning(const vector<vector<double>> AvailActions
 
 }
 
-ModelBasedLearning::ModelBasedLearning(const vector<vector<double>> AvailActions, const vector<double> StartState, double DefQ, double gam, int maxUps)
+ModelBasedLearning::ModelBasedLearning(const vector<vector<double>>& AvailActions, const vector<double>& StartState, double DefQ, double gam, int maxUps)
 {
 	availableActions = AvailActions;
 	startState = StartState;
@@ -86,8 +86,8 @@ double ModelBasedLearning::PredictReward(stateType state, actionType action, sta
 {
 	stats.SetModelAccesses(stats.GetModelAccesses() + 1);
 
-	//Trying to insert a new map into this. Will return the already in place value if its there.
-	return (TR[state][action].insert(pair<stateType, pair<double, double>>(newState, pair<double, double>(0, defaultQ)))).first->second.second;
+	//Trying to emplace a new map into this. Will return the already in place value if its there.
+	return (TR[state][action].emplace(pair<stateType, pair<double, double>>(newState, pair<double, double>(0, defaultQ)))).first->second.second;
 }
 
 
@@ -114,20 +114,19 @@ map<double, double> ModelBasedLearning::PredictReward(stateType state, actionTyp
 }
 
 //Evaluate what the value in the Qtable is, given a specific state and a specific action
-double ModelBasedLearning::Value(const vector<double>& state,const vector<double>& action)
+double ModelBasedLearning::Value(const vector<double>& state, const vector<double>& action)
 {
-	const auto & statePtr = QTable.insert(pair<stateType, map<vector<double>, double>>(state, defaultMap));//Insert will see if the Key exists, if not will insert a defaultMap at it
-		return statePtr.first->second[action];
-}
+	return QTable.emplace(pair<stateType, map<vector<double>, double>>(state, defaultMap)).first->second[action];//emplace will see if the Key exists, if not will emplace a defaultMap at it
 
+}
 //, will return a vector of rewards pertaining to the vector of actions from the state
 vector<double> ModelBasedLearning::Value(const vector<double>& state, const vector<vector<double>>& actions)
 {
 	//size the vector from the start with default vals
-	const auto & statePtr = (QTable.insert( pair<stateType, map<vector<double>, double>>(state, defaultMap)));//Insert will see if the Key exists, if not will insert a defaultMap at i
+	const auto & statePtr = (QTable.emplace( pair<stateType, map<vector<double>, double>>(state, defaultMap)));//emplace will see if the Key exists, if not will emplace a defaultMap at i
 	size_t sz = actions.size();
 	
-	if (statePtr.second)//boolean if defaultMap was inserted, if it was all the values will be defQ anyways
+	if (statePtr.second)//boolean if defaultMap was emplaceed, if it was all the values will be defQ anyways
 		return vector<double>(sz,defaultQ);
 
 	
@@ -153,40 +152,35 @@ double ModelBasedLearning::Update(const StateTransition& transition)
 	stateType NS(transition.getNewState());
 	actionType ACT(transition.getAction());
 
-	auto & TR_it = TR[OS][ACT].insert(pair<stateType, pair<double, double>>(NS, pair<double, double>(0, 0))).first->second;
-	TR_it.first++;//The trans
-	TR_it.second += transition.getReward();
-
-	//((TR[OS][ACT].insert(pair<stateType, pair<double,double>(NS,(0,0)))).first->second.first)++; //will default it to 0 if it is not there, then will increment what is there
-	//(R[OS][ACT].insert(pair<stateType, double>(NS, 0))).first->second += transition.getReward();
+	auto & TR_it = TR[OS][ACT].emplace(pair<stateType, pair<double, double>>(NS, pair<double, double>(0, 0))).first->second;
+	++(TR_it.first);//The trans
+	TR_it.second = transition.getReward();
 
 	//Update a predecessors so that they contain the new state. and the transition from the old
-	predecessors[NS][OS].insert(ACT);
-	(priority[OS])= (numeric_limits<double>::infinity());
+	predecessors[NS][OS].emplace(ACT);
+	priority[OS]= (numeric_limits<double>::infinity());
 
 	//Preform Prioritized sweeping, i is the return value of the function, and signifies the number of Updates completed
-	
 	int i = 0;
 	for (i; i<maxUpdates; ++i)
+	//while(true)
 	{
-		//Find the highest Priority State
-		
-		const map<vector<double>, double>::iterator& iterMax = findMaxPriority();
+		//Find the highest Priority State		
+		const map<vector<double>, double>::iterator iterMax = findMaxPriority();
 		
 		if(iterMax == priority.end() || !(iterMax -> second))
 			break;
 		
 		double valueChange = calcUpdate_value( (iterMax->first) );//Update the QTable at the given state(max Priority state)
-		if (!valueChange)
-		{
-			priority.erase(iterMax);
-			continue;
-		}
+		//if (!valueChange)
+		//{
+		//	priority.erase(iterMax);
+		//	continue;
+	//	}
 
 		//lastly update the priorities before doing the loop again
 		//Understand that iterPredecState is predecessor[PriorityState], thus points to a map<state,unordered_Set<actiontype>>
 		//map<stateType, unordered_set<actionType>>::iterator iterPredecState(predecessors.find(iterMax->first)->second.begin());
-
 		map<stateType, unordered_set<vector<double>>>::iterator iterPredecState(predecessors[iterMax->first].begin());
 		const auto & end = predecessors[iterMax->first].end();
 		double valueTrans;	
@@ -199,7 +193,7 @@ double ModelBasedLearning::Update(const StateTransition& transition)
 				{
 					valueTrans = (valueChange * TR[iterPredecState->first][predact][iterMax->first].first);
 
-					auto pri = priority.insert(priorInsrt);
+					auto pri = priority.emplace(priorInsrt);
 					if (pri.first->second < valueTrans)
 						pri.first->second = valueTrans;
 				}
@@ -227,7 +221,7 @@ void ModelBasedLearning::ResetStats()
 }
 
 
-void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
+inline void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 {
 		//First add up the sum of the number of transitions that have occured from this state,action
 	double P = 0;
@@ -249,13 +243,14 @@ void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 	//This will only do the states that the T table has seen. 
 	double newQ = 0;
 	double maxQ(numeric_limits<double>::lowest());
-	//map<stateType,double>* thisRPreState = &R[state][action]; //save on repeatedly doing lookups	
 	pair<unordered_map<stateType, map<actionType, double>>::iterator, bool> QPtr;
 	map<actionType, double>::iterator qEnd;
 		
+	//T_iter is the [S][A], so now we will iterate all the S primes,
+	//We will see if the SPrime is in the QTable and put a defaultQ values at its position if it isnt. While grabbing an iterator
 	for (T_iter = T_begin; T_iter != T_end; ++T_iter)
 	{
-	    QPtr = QTable.insert( pair<stateType, map<vector<double>, double>>(T_iter->first, defaultMap));//Insert will see if the Key exists, if not will insert a defaultMap at it
+	    QPtr = QTable.emplace( pair<stateType, map<vector<double>, double>>(T_iter->first, defaultMap));//emplace will see if the Key exists, if not will emplace a defaultMap at it
 		if (!QPtr.second)//Will be false if the element already existed at iter->first, if it did, it will not overwrite
 		{
 			qEnd = QPtr.first->second.end();
@@ -268,8 +263,8 @@ void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 		else
 			maxQ = defaultQ;
 
-		double thisR = (*SAInterest)[T_iter->first].second;
-		newQ += (T_iter->second.first / P) * (thisR + gamma * maxQ);
+		double thisR = T_iter->second.second;//The reward, where T_iter is the [S][A], ->second is the S^, thus ->second.second is reward for [s][a][s^]
+		newQ += (T_iter->second.first / P) * (thisR + (gamma * maxQ));
 	}
 		//Put the new value in the QTable
 		QTable[state][action] = newQ;
@@ -277,7 +272,7 @@ void ModelBasedLearning::UpdateQ(const stateType& state, actionType& action)
 	}
 
 //When the priority has a number of zero priorities, this will attempt to remove, to make faster iteration.
-void ModelBasedLearning::cleanUpPriority()
+inline void ModelBasedLearning::cleanUpPriority()
 {
 	const auto & end(priority.end());
 		for (map<vector<double>, double>::iterator curIter = priority.begin(); curIter != end;)
@@ -295,7 +290,7 @@ void ModelBasedLearning::cleanUpPriority()
 }
 
 //Simply iterate over the priority map and find what priority is currently the max
-map<vector<double>, double>::iterator ModelBasedLearning::findMaxPriority()
+inline map<vector<double>, double>::iterator ModelBasedLearning::findMaxPriority()
 {
 	//map<vector<double>, double>::iterator iterMax = priority.begin(); //since we have to see all the elements of the map, iterator should be faster then look ups with []
 	map<actionType,double>::iterator max = priority.begin();
@@ -312,7 +307,7 @@ map<vector<double>, double>::iterator ModelBasedLearning::findMaxPriority()
 
 //Will take the maximum priority state, and run an update on it. this includes calling UpdateQ
 //Afterwards will calculate what teh change in the QTable was for the iterMax state and return.
-double ModelBasedLearning::calcUpdate_value(const stateType& state)
+inline double ModelBasedLearning::calcUpdate_value(const stateType& state)
 {
 	//Perform Update step on the highest priority, currently pointed to by the iterMax
 	vector<double> oldValues = Value(state, availableActions);

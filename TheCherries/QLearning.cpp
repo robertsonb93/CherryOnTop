@@ -10,6 +10,9 @@
 	alpha = 0.9;
 	gamma = 0.9;
 	defaultQ = 0.1;
+
+	for each(auto act in AA)
+	defaultMap[act] = defaultQ;
 };
 
 
@@ -19,6 +22,9 @@
 	gamma = gam;
 	defaultQ = defQ;
 	availableActions = AA;
+
+	for each(auto act in AA)
+		defaultMap[act] = defaultQ;
 }
 
 
@@ -29,9 +35,10 @@
 //Returns a single value associated with the value of the given Action and state
  double QLearning::Value(const vector<double>& state, const vector<double>& action) 
  {
-	 ensureExists(state);
-	 return table.at(state).at(action);
-
+	 //Emplace will check if the Key[state] exists, if it does not, it will make a default map. 
+	 //Where the position is that the state is made/found, a pair<iter,bool> is created, so we reference .first "The iterator"
+	 //From the iterator which references the state map, we just look up the action at ->second which is the map of actions to QValues
+	return table.emplace(pair<vector<double>, map<vector<double>, double>>(state, defaultMap)).first->second[action];
  };
 
 
@@ -39,16 +46,18 @@
  //returns a vector of values associated with each action at the state vector
 vector<double> QLearning::Value(const vector<double>& state, const vector<vector<double>>& action)
 {
-	vector<double> response;
-	response.resize(action.size()); //initilizing the vector to size
-	ensureExists(state);
+	const auto & iter = table.emplace(pair<vector<double>, map<vector<double>, double>>(state, defaultMap));
+		size_t sz = action.size();
 
-	map<vector<double>, double> actionMap = table.at(state);
+	if (iter.second)//boolean if defaultMap was emplaceed, if it was all the values will be defQ anyways
+		return vector<double>(sz, defaultQ);
 
-	for (unsigned int i = 0; i < response.size(); i++)
-		response[i] = actionMap[action[i]];//At the state, look up the action to get the Q-value
 
-	return response;
+	vector<double> ret(sz, defaultQ);
+	for (size_t i = 0; i < sz; i++)
+		ret[i] = iter.first->second[action[i]];
+
+	return ret;
 };
 
 
@@ -57,34 +66,36 @@ vector<double> QLearning::Value(const vector<double>& state, const vector<vector
 //
 double QLearning::Update(const StateTransition& transition)
 {
-	double cumRwrd = stats.GetCumulativeReward();
-	stats.SetCumulativeReward(cumRwrd + transition.getReward());
 
-	ensureExists(transition.getOldState());
-	ensureExists(transition.getNewState());
+	stats.SetCumulativeReward(stats.GetCumulativeReward() + transition.getReward());
 
-	double q_s_a = Value(transition.getOldState(), transition.getAction());
+	vector<double> OS(transition.getOldState());
+	vector<double> NS(transition.getNewState());
+	vector<double> ACT(transition.getAction());
 
-	//table is the key'd by states with a map of actions(vector<double>) key'd each with a value, 
-	map<vector<double>, double> actionMap = table.at(transition.getNewState());//at() safer due to throw if key DNE
+	//Need to make sure that the old state and the new state are both in the QTable
+	 auto * OS_Ptr = &(table.emplace(pair<vector<double>, map<vector<double>, double>>(OS, defaultMap)).first->second[ACT]);//Grab pointer to save on look ups
+	const auto & NS_Iter = table.emplace(pair<vector<double>, map<vector<double>, double>>(NS, defaultMap));//Want the Boolean on if we have seen the state before
 
-	double maxNewQ,tempQ;
-	maxNewQ = tempQ = actionMap[availableActions[0]];//Init to the first Q value.
-	
-													 //Find the maxQ value
-	for each(vector<double> d in availableActions)
-	{
+	double q_s_a = *OS_Ptr;//Put the Value of the pointer into Q_S_A
 
-		tempQ =	actionMap[d];
-		if (tempQ > maxNewQ)
-			maxNewQ = tempQ;
-		
+	double maxQ(NS_Iter.first->second.begin()->second);	//Init to the first Q value., .begin() is an iter pointing at the first action,Qvalue pair
+	if (!(NS_Iter.second)) //if the value was emplaced instead of just found, if emplaced all the vals are the same
+	{	
+		map<vector<double>, double>::iterator qEnd = NS_Iter.first->second.end();
+
+		//Find the MaxQ value of the table[newstate] across all actions												 							
+		for(auto it = NS_Iter.first->second.begin();it != qEnd; ++it)
+		{
+			{
+				if (it->second > maxQ)
+					maxQ = it->second;
+			}
+		}
 	}
 	
-	table[transition.getOldState()][transition.getAction()] = q_s_a + alpha * (transition.getReward() + gamma * maxNewQ - q_s_a);
-	double newVal = table[transition.getOldState()][transition.getAction()];
-	
-	return abs(newVal - q_s_a);
+	*OS_Ptr = *OS_Ptr + alpha * (transition.getReward() + gamma * maxQ - *OS_Ptr);//The bellman equation 
+	return abs(*OS_Ptr - q_s_a);
 };
 
 PerformanceStats QLearning::GetStats() 
@@ -98,24 +109,3 @@ void QLearning::SetStats(PerformanceStats & PS)
 	stats = PS;
 };
 
-
-//Given a state, will try table.at(state), this will throw an exception if the actionMap is non-existent
-//On exception, will populate an actionMap and put it into the table.at(state)
-//Else does nothing and continues
-//CALL THIS FUNCTION BEFORE ACCESSING THE actionMap
-void QLearning::ensureExists(const vector<double>& state)
-{
-	try
-	{
-		table.at(state);
-	}
-	catch (const out_of_range&)
-	{
-		map<vector<double>, double> actionMap;
-		for each (vector<double> d in availableActions)
-		{
-			actionMap[d] = defaultQ;
-		}
-		table[state] = actionMap;
-	}
-};

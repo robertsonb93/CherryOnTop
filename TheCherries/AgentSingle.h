@@ -34,9 +34,6 @@ typedef QLearning _DefaultAVType;
 	private:
 		vector<double> state;//Where is the agent currently located
 		PolicyBase* policy = nullptr;
-
-
-		//Notice, since maps are in terms of h*w which is y*x so the moves are also in y*x, thus we have, left, up, right, down;
 		//Understand that the folliwng are owned by the base class Agent.cpp
 		//ActionValue* actionValue;
 		//std::vector<vector<double>> possibleActions;

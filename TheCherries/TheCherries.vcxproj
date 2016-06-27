@@ -34,7 +34,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <WholeProgramOptimization>PGOptimize</WholeProgramOptimization>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -86,6 +86,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PreprocessorDefinitions>DLL_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -113,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(EASYBMP);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -121,6 +122,11 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="ActionValue.h" />
     <ClInclude Include="AgentBase.h" />
+    <ClInclude Include="AgentMulti.h" />
     <ClInclude Include="AgentSingle.h" />
     <ClInclude Include="EpsilonGreedy.h" />
     <ClInclude Include="GridWorldBase.h" />
@@ -176,6 +183,7 @@
     <ClInclude Include="WorldBase.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AgentMulti.cpp" />
     <ClCompile Include="AgentSingle.cpp" />
     <ClCompile Include="EpsilonGreedy.cpp" />
     <ClCompile Include="ModelBasedLearning.cpp" />

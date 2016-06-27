@@ -21,14 +21,16 @@ private:
 
 public:
 	
-	ModelBasedLearning(const vector<vector<double>> AvailActions, const vector<double> StartState );
-	ModelBasedLearning(const vector<vector<double>> AvailActions, const vector<double> StartState, double DefQ, double gam, int maxUps);
+	ModelBasedLearning(const vector<vector<double>>& AvailActions, const vector<double>& StartState );
+	ModelBasedLearning(const vector<vector<double>>& AvailActions, const vector<double>& StartState, double DefQ, double gam, int maxUps);
 	~ModelBasedLearning();
 
 	map<stateType,double> PredictNextStates(stateType state, actionType action);
 	stateType PredictNextState(stateType state, actionType action);
 	double PredictReward(stateType state, actionType action, stateType newState);
 	map<double, double> PredictReward(stateType state, actionType action);
+
+	//Running Functions, used for the brunt of the learner
 	double Value(const vector<double>& state,const vector<double>& action);
 	vector<double> Value(const vector<double>& state,const vector<vector<double>>& actions);
 	double Update(const StateTransition & transition);
@@ -48,19 +50,16 @@ private:
 	
 	double defaultQ = 10, gamma = 0.9;
 	int c = 1;
-	int maxUpdates = 120;//1000;
-	//SASTable T;
-	//SASTable R;//was originally a histogram, now is just a double
-	SASTable TR;
+	int maxUpdates = 120;
+	SASTable TR;//[state][action].first is the T: [state][action].second is the R
 	QTableType QTable;
 	unordered_map<stateType, map<stateType, unordered_set<vector<double>>>> predecessors;//double<vector> = actiontype
 	map<stateType, double> priority;
+	
 	PerformanceStats stats;
-	double random = rand();//This number will be deterministically random, seed will use 1 in the constructor. for reproduceable results in tests
 	vector<actionType> availableActions;
 	stateType startState;
-
-	map<vector<double>, double> defaultMap;//Used for creating a quick table of default values for the Qtable
+	map<actionType, double> defaultMap;//Used for creating a quick table of default values for the Qtable
 };
 
 #endif

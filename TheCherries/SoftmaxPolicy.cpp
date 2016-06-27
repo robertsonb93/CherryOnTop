@@ -27,8 +27,8 @@ SoftmaxPolicy::~SoftmaxPolicy()
 std::vector<double> SoftmaxPolicy::selectAction(std::vector<std::vector<double>>& availableActions, std::vector<double>& values, std::vector<double>& params)
 {
 	double temperature = defaultT;
-	if (!params.empty())//A different temperature is desired
-		temperature = params[0];
+	//if (!params.empty())//A different temperature is desired
+	//	temperature = params[0];
 
 	std::vector<double> probs;
 	probs.resize(values.size());//Keep atleast n amount for the vector
@@ -39,7 +39,7 @@ std::vector<double> SoftmaxPolicy::selectAction(std::vector<std::vector<double>>
 		probs[i] = probs[i - 1] + exp(values[i] / temperature);
 	
 	//need a number between 0-1
-	double threshold = (rand() % 100) / 100.0;
+	double threshold = ((double)rand() / RAND_MAX);
 	threshold *= probs[probs.size() - 1];
 
 	//Check which probs exceed the threshold
