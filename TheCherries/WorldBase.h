@@ -8,8 +8,6 @@
 //Makes an abstract base class of WorldBase, and furthermore, forces derived classed to define func(), and is
 //now called a pure virtual function
 #include "stdafx.h"
-//#include <string>
-//
 #include "PerformanceStats.h"
 #include "AgentBase.h"
 
@@ -20,15 +18,8 @@
 	public:
 
 		WorldBase() {};
-		virtual ~WorldBase() = 0 { delete agent; };
-		virtual PerformanceStats StepAgent(string userAction) = 0;
-		virtual void AddAgent(PolicyBase* pol, ActionValue* AV) = 0;
-		//virtual void Load(string filename) = 0;
-
-
-		//Members
-	protected:
-		AgentBase* agent = nullptr; //Every world has to have an agent
+		virtual ~WorldBase() = 0 {};
+		virtual StateTransition PerformStep(const vector<double>&, const vector<double>&,PerformanceStats&) = 0;
 
 	};
 

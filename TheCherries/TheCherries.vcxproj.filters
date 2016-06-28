@@ -49,6 +49,12 @@
     <Filter Include="Source Files\Policy">
       <UniqueIdentifier>{e37d1f37-623c-4e5e-bbfc-85c1f0551f03}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Interpretors">
+      <UniqueIdentifier>{bc10f839-f868-4cfc-a287-395f8ecac66a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interpretors">
+      <UniqueIdentifier>{372e9239-d45d-44c1-add2-b330e31be2bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PerformanceStats.h">
@@ -111,6 +117,12 @@
     <ClInclude Include="HashVecDoubles.h">
       <Filter>Header Files\Agent</Filter>
     </ClInclude>
+    <ClInclude Include="InterpretorBase.h">
+      <Filter>Header Files\Interpretors</Filter>
+    </ClInclude>
+    <ClInclude Include="TraditionalMazeInterpretor.h">
+      <Filter>Header Files\Interpretors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PerformanceStats.cpp">
@@ -140,8 +152,11 @@
     <ClCompile Include="ModelBasedLearning.cpp">
       <Filter>Source Files\ActionValue</Filter>
     </ClCompile>
+    <ClCompile Include="TraditionalMazeInterpretor.cpp">
+      <Filter>Source Files\Interpretors</Filter>
+    </ClCompile>
     <ClCompile Include="AgentMulti.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Agent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
