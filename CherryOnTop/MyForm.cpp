@@ -169,13 +169,17 @@ void CherryOnTop::MyForm::runButton_Click(System::Object ^ sender, System::Event
 
 //The dropdown box for the action-value, clicking it and changing will cause this function to be called
 //Furthermore this will start a new series in the charts
+//If you Change this option, the agent will currently start from a the same position it currently is at.
 void CherryOnTop::MyForm::avTypeBox_SelectedIndexChanged(System::Object ^ sender, System::EventArgs ^ e)
 {	
 
 	agentPtr->setActionValue(getAVBox());
-	if()
-	resetCounters();
-	actChanged = true;
+	if (aVChangeCheckBox->Checked)
+	{
+		resetAgent(); actChanged = true;
+	}
+	
+	
 }
 
 
@@ -184,8 +188,15 @@ void CherryOnTop::MyForm::avTypeBox_SelectedIndexChanged(System::Object ^ sender
 void CherryOnTop::MyForm::PolicyBox_SelectedIndexChanged(System::Object ^ sender, System::EventArgs ^ e)
 {
 	agentPtr->setPolicy(getPolicyBox());
-	resetCounters();
-	polChanged = true;
+	if (policyChangeCheckBox->Checked)
+	{
+		resetAgent(); polChanged = true;
+	}
+
+	else if (policyChangeCheckbox2->Checked)
+		resetLearner();
+
+	
 }
 
 //Used for the Form Item labeled World, it is a dropdown box that has multiple strings inside, one of which can be selected
@@ -210,13 +221,18 @@ void CherryOnTop::MyForm::worldBox_SelectedIndexChanged(System::Object ^ sender,
 	}
 	}
 
+	if (worldChangecheckBox->Checked)
+		resetAgent();
+	else if (worldChangeCheckBox2->Checked)
+		resetLearner();
+
 	if (System::IO::File::Exists(activeFile.FileName))
 		LoadMapFromFileName(activeFile.FileName);
 
 
 	avTypeBox->Enabled = true;
 	PolicyBox->Enabled = true;
-	resetCounters();
+	//resetCounters();
 	worldChanged = true;
 }
 
@@ -445,4 +461,42 @@ void CherryOnTop::MyForm::stepTimerComboBox_SelectedIndexChanged(System::Object^
 	//For clarity while using we will disable the numeric up-down of whatever we aren't using, and enable what we are
 	stepStop->Enabled = doCompareSteps;
 	timerStop->Enabled = doCompareTime;
+}
+
+
+//When Checkbox conditions are met, then this function will be called where it resets the current Actionvalue used by the agent.
+void CherryOnTop::MyForm::resetLearner()
+{
+	agentPtr->setActionValue(getAVBox());
+}
+
+
+void CherryOnTop::MyForm::resetAgent()
+
+{
+	agentPtr = new _DefaultAgentType();
+	switch (worldBox->SelectedIndex)
+	{
+	case (int)worldEnum::TraditionalMaze_4:
+	{
+		worldPtr = (TraditionalMaze*)agentPtr->setInterpretor(new TraditionalMazeInterpretor(4));
+		break;
+	}
+	case (int)worldEnum::TraditionalMaze_8:
+	{
+		worldPtr = (TraditionalMaze*)agentPtr->setInterpretor(new TraditionalMazeInterpretor(8));
+		break;
+	}
+	default:
+	{
+		worldPtr = (TraditionalMaze*)agentPtr->setInterpretor(new _DefaultInterpretor(4));
+	}
+	}
+	if (System::IO::File::Exists(activeFile.FileName))
+		LoadMapFromFileName(activeFile.FileName);
+	agentPtr->setActionValue(getAVBox());
+	agentPtr->setPolicy(getPolicyBox());
+	
+	
+	resetCounters();
 }
