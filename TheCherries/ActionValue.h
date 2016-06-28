@@ -4,19 +4,8 @@
 
 
 #include "stdafx.h"//#include <vector>
-#include "StateTransition.h"
-#include "PerformanceStats.h"
-
-#if defined _EXPORT
-#define DLL _declspec(export)
-#else
-#define DLL _declspec(import)
-#endif
-
-
 //Provides the abstract base class for the ActionValue's, the ActionValues are the individual learning Algorithms
-extern "C"
-{
+
 	class  ActionValue abstract
 	{
 	public:
@@ -39,5 +28,5 @@ extern "C"
 
 
 	};
-}
+
 #endif

@@ -168,6 +168,7 @@
     <ClInclude Include="EpsilonGreedy.h" />
     <ClInclude Include="GridWorldBase.h" />
     <ClInclude Include="HashVecDoubles.h" />
+    <ClInclude Include="InterpretorBase.h" />
     <ClInclude Include="ModelBasedBase.h" />
     <ClInclude Include="ModelBasedLearning.h" />
     <ClInclude Include="ModelFreeBase.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="StateTransition.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TraditionalMaze.h" />
+    <ClInclude Include="TraditionalMazeInterpretor.h" />
     <ClInclude Include="WorldBase.h" />
   </ItemGroup>
   <ItemGroup>
@@ -193,6 +195,7 @@
     <ClCompile Include="SoftmaxPolicy.cpp" />
     <ClCompile Include="StateTransition.cpp" />
     <ClCompile Include="TraditionalMaze.cpp" />
+    <ClCompile Include="TraditionalMazeInterpretor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TheCherries.def" />

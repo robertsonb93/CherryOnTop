@@ -13,7 +13,7 @@
 	class StateTransition
 	{
 	public:
-			StateTransition(const vector<double>& OS, const vector<double>& NS, vector<double>& act, double rwrd, bool SessionHasEnded = false);
+			StateTransition(const vector<double>& OS, const vector<double>& NS,const vector<double>& act, double rwrd, bool SessionHasEnded = false);
 		 ~StateTransition();
 
 		 vector<double> getOldState() const;

@@ -25,23 +25,21 @@
 		 virtual ~GridWorldBase()
 		{}
 
+		 //Accessed by interface/form
 		 virtual mazeType ShowState() = 0;
-
 		 virtual int GetMap(int x, int y) =0;
-
 		 virtual int GetHeight() { return mapBMP[0].size(); };
-		 virtual int GetWidth() { return mapBMP.size(); };
-		 
+		 virtual int GetWidth() { return mapBMP.size(); };	 
 		 virtual void Load(mazeType inMap, vector<double> start) = 0;
-		 virtual void AddAgent(PolicyBase* pol, ActionValue* AV) = 0;
-		 virtual PerformanceStats StepAgent(string userAction = "") = 0;
 
+
+		 //Would be accessed by the Agent
+		 virtual StateTransition PerformStep(const vector<double>&, const vector<double>& ,PerformanceStats& ) = 0;
 		virtual vector<vector<double>> GetVisitedStates() =0;
 		virtual vector<vector<double>> GetAvailableActions()=0;
 		virtual vector<double> GetStartState() =0;
 
 	protected:
-		//BMP mapBMP;
 		mazeType mapBMP;
 
 	};

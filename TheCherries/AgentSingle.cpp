@@ -2,37 +2,14 @@
 #include "AgentSingle.h"
 
 
-//THis constructor is not safe/complete, will need a definition of possActions and of state to work.
+
 AgentSingle::AgentSingle()
 {
-	if (policy != nullptr)
-		delete policy;
-	if (actionValue != nullptr)
-		delete actionValue;
 
-	policy = new _DefaultPolicyType();
-	//actionValue = new _DefaultAVType();
-
-}
-
-//Must be given a state, to mark where the agent currently is, or its starting state
-//Pol can be a nullptr, if so it will default
-//Av can be a nullptr, if so it will default with the possActions
-//possActions is required for constructing the AV
-AgentSingle::AgentSingle(const vector<double>& State, PolicyBase *pol, ActionValue *AV,const vector<vector<double>>& possActions)
-	: state(State)
-{
-	possibleActions = possActions;
-	if (pol != nullptr)
-		policy = pol; //pol and policy will point to the same instance of PolicyBase now
-	else policy = new _DefaultPolicyType();
-	if(AV != nullptr)
-	actionValue = AV; //actionValue and AV should be pointing at the same instance of the ActionValue
-						//If the ActionValue gets deleted or lost, then actionValue will be lost
-	else actionValue = new _DefaultAVType(possActions);
 }
 
 //Note that the actionvalue* will be deleted by the base case.
+//Note that the interpretor* will also be deleted by the base case.
 AgentSingle::~AgentSingle()
 {
 	if(policy != nullptr)
@@ -40,29 +17,36 @@ AgentSingle::~AgentSingle()
 	policy = nullptr;
 }
 
-//function will give a the values alongside the possible actions, 
-//the selected policy will then choose and return the "best" action
-//Notice it is an actual value of action, not an index or iterator
+//Function will ask for the Q-Values from the current state, and possibleActions.
+//Afterwards will give the values to the Policy to get a Single action.
+//After receiving the Single action, the agent will give its state and action to the interpretor to perform the action in the world.
 vector<double> AgentSingle::SelectAction()
 {
-	//get a QValue for every action
-
 	vector<double> values = actionValue->Value(state, possibleActions);
 	//Use the policy to select an action from the values
-	vector<double> emptyParam;
+	vector<double> empty;
+	auto act = policy->selectAction(possibleActions, values, empty);
 
-	return policy->selectAction(possibleActions, values,emptyParam);
+	this->LogEvent(interpretor->DoAction(act, state, actionValue->GetStats()));
+
+
+	return act;
+
 }
 
 //function will give a the values alongside the possible actions, 
 //the selected policy will then choose and return the "best" action
 //Notice it is an actual value of action, not an index or iterator
+//This is function differs from the one above for the sake of Policies that use parameters.
 vector<double> AgentSingle::SelectAction(vector<double>& params)
 {
 	//get a QValue for every action
 	vector<double> values = actionValue->Value(state, possibleActions);
 	//Use the policy to select an action from the values
-	return policy->selectAction(possibleActions, values, params);
+	auto act = policy->selectAction(possibleActions, values, params);
+	this->LogEvent(interpretor->DoAction(act, state, actionValue->GetStats()));
+
+	return act;
 }
 
 void AgentSingle::SetState(vector<double>& inputState)
@@ -83,9 +67,38 @@ void AgentSingle::LogEvent(StateTransition transition)
 	actionValue->Update(transition);
 }
 
+void AgentSingle::setActionValue(ActionValue* newAv)
+{
+	if (actionValue != nullptr)
+	{
+		delete actionValue;
+	}
+	actionValue = newAv;
+}
+
+void AgentSingle::setPolicy(PolicyBase* pol)
+{
+	if (policy != nullptr)
+	{
+		delete policy;
+	}
+	policy = pol;
+}
+
+ WorldBase* AgentSingle::setInterpretor(InterpretorBase* Intrptr)
+{
+	if (interpretor != nullptr)
+	{
+		delete interpretor;
+	}
+	possibleActions = Intrptr->GetAvailableActions();
+	state = Intrptr->GetStartState();
+	interpretor = Intrptr;
+	return Intrptr->GetWorld();//So the interface can look at the world
+}
+
 PerformanceStats AgentSingle::GetStats()
 {
-	
 	return actionValue->GetStats();
 }
 

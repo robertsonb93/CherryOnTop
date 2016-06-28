@@ -22,16 +22,15 @@ typedef AgentSingle _DefaultAgentType;
 		 TraditionalMaze(int numberOfActions = 4);
 		 ~TraditionalMaze();
 
-		 PerformanceStats StepAgent(string userAction = "");
-
-		 void AddAgent(PolicyBase* pol, ActionValue* AV);
+		 //Accessed by interface/form		
 		 mazeType ShowState();
-		 //void Load(string filename);
 		 void Load(mazeType inMap, vector<double> start);
-
 		 void ChangeRwrds(double newOpen, double newWall, double newLava, double newGoal);
 		 int GetMap(int x, int y);//Returns the type of tile on the map at the spec position
 		 mazeType GetMap();
+
+		 //Accessed by the Agent 
+		 StateTransition PerformStep(const vector<double>& Action, const vector<double>& state, PerformanceStats& perfStats);
 		 vector<vector<double>> GetVisitedStates();
 		 vector<vector<double>> GetAvailableActions();
 		 vector<double> GetStartState();
@@ -47,6 +46,7 @@ typedef AgentSingle _DefaultAgentType;
 		vector<double> startState;
 		vector<vector<double>> availableActions;
 		vector<vector<double>> visitedStates; //Each internal vector is a state
+		vector<vector<double>> currLocations; //Will use the seen transitions to try and mark where agents currently are.
 		int numActions;
 
 		double openSpaceRwrd = -0.01;

@@ -18,10 +18,16 @@
 #include "../TheCherries/TraditionalMaze.h"
 
 
-typedef TraditionalMaze _DefaultWorld;
+//Interpretors
+#include "../TheCherries/TraditionalMazeInterpretor.h"
 
 
-//The function and member declarations are at the bottom below all the windows form initilization
+typedef TraditionalMazeInterpretor _DefaultInterpretor;//Note that the interpretor contains the world
+typedef QLearning _DefaultAVType;
+// typedef  EpsilonGreedy _DefaultPolicyType;
+
+
+//The function and member declarations are at the bottom below all the windows form initialization
 namespace CherryOnTop {
 
 	using namespace System;
@@ -45,15 +51,17 @@ namespace CherryOnTop {
 			pictureBox1->Paint += gcnew PaintEventHandler(this, &MyForm::pictureBox1Paint);
 			resetCounters();
 
-			avTypeBox->DataSource = Enum::GetNames(actionValuesEnum::typeid); //This will populate the actionvalue list
+			avTypeBox->DataSource = Enum::GetNames(actionValuesEnum::typeid); //This will populate the action value list
 			PolicyBox->DataSource = Enum::GetNames(policyEnum::typeid);
 			worldBox->DataSource = Enum::GetNames(worldEnum::typeid);
 
 			PolicyBox->Enabled = false;//Turns the buttons off, will turn them on when a world is chosen.
 			avTypeBox->Enabled = false;
-			//
-			//TODO: Add the constructor code here
-			//
+
+			agentPtr->setInterpretor(new _DefaultInterpretor(4));
+			agentPtr->setActionValue(new _DefaultAVType(agentPtr->GetAvailAction()));
+			agentPtr->setPolicy(new _DefaultPolicyType());
+
 		}
 
 	protected:
@@ -96,6 +104,9 @@ namespace CherryOnTop {
 	private: System::Windows::Forms::Label^  stepStopLabel;
 	private: System::Windows::Forms::Label^  label8;
 	private: System::Windows::Forms::ComboBox^  stepTimerComboBox;
+	private: System::Windows::Forms::CheckBox^  policyChangeCheckbox;
+	private: System::Windows::Forms::CheckBox^  aVChangeCheckBox;
+	private: System::Windows::Forms::Label^  label9;
 
 
 
@@ -151,6 +162,9 @@ namespace CherryOnTop {
 			this->stepStopLabel = (gcnew System::Windows::Forms::Label());
 			this->label8 = (gcnew System::Windows::Forms::Label());
 			this->stepTimerComboBox = (gcnew System::Windows::Forms::ComboBox());
+			this->policyChangeCheckbox = (gcnew System::Windows::Forms::CheckBox());
+			this->aVChangeCheckBox = (gcnew System::Windows::Forms::CheckBox());
+			this->label9 = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->stepStop))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chartCumulativeReward))->BeginInit();
@@ -189,7 +203,6 @@ namespace CherryOnTop {
 			this->stepStop->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			this->stepStop->ThousandsSeparator = true;
 			this->stepStop->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2000, 0, 0, 0 });
-			this->stepStop->ValueChanged += gcnew System::EventHandler(this, &MyForm::numericUpDown1_ValueChanged);
 			// 
 			// checkBox1
 			// 
@@ -431,11 +444,43 @@ namespace CherryOnTop {
 			this->stepTimerComboBox->Text = L"Use Steps&Timer";
 			this->stepTimerComboBox->SelectedIndexChanged += gcnew System::EventHandler(this, &MyForm::stepTimerComboBox_SelectedIndexChanged);
 			// 
+			// policyChangeCheckbox
+			// 
+			this->policyChangeCheckbox->AutoSize = true;
+			this->policyChangeCheckbox->Location = System::Drawing::Point(312, 217);
+			this->policyChangeCheckbox->Name = L"policyChangeCheckbox";
+			this->policyChangeCheckbox->Size = System::Drawing::Size(91, 17);
+			this->policyChangeCheckbox->TabIndex = 26;
+			this->policyChangeCheckbox->Text = L"PolicyChange";
+			this->policyChangeCheckbox->UseVisualStyleBackColor = true;
+			// 
+			// aVChangeCheckBox
+			// 
+			this->aVChangeCheckBox->AutoSize = true;
+			this->aVChangeCheckBox->Location = System::Drawing::Point(420, 215);
+			this->aVChangeCheckBox->Name = L"aVChangeCheckBox";
+			this->aVChangeCheckBox->Size = System::Drawing::Size(77, 17);
+			this->aVChangeCheckBox->TabIndex = 27;
+			this->aVChangeCheckBox->Text = L"AVChange";
+			this->aVChangeCheckBox->UseVisualStyleBackColor = true;
+			// 
+			// label9
+			// 
+			this->label9->AutoSize = true;
+			this->label9->Location = System::Drawing::Point(345, 199);
+			this->label9->Name = L"label9";
+			this->label9->Size = System::Drawing::Size(91, 13);
+			this->label9->TabIndex = 28;
+			this->label9->Text = L"Reset Learner On";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(584, 702);
+			this->Controls->Add(this->label9);
+			this->Controls->Add(this->aVChangeCheckBox);
+			this->Controls->Add(this->policyChangeCheckbox);
 			this->Controls->Add(this->stepTimerComboBox);
 			this->Controls->Add(this->label8);
 			this->Controls->Add(this->stepStopLabel);
@@ -478,7 +523,7 @@ namespace CherryOnTop {
 
 	private:
 		//Runtime Members ARE HERE//
-		GridWorldBase* world = new _DefaultWorld(); //Can point to any type of world. In the form though, we only want Gridworld
+		GridWorldBase* worldPtr = nullptr; //Can point to any type of world. In the form though, we only want Gridworld
 		AgentBase* agentPtr = new _DefaultAgentType();
 
 		Bitmap^ bmap = nullptr; //Will be used for holding onto a modifiable bitmap of the displayed image, since the picbox->image, cant modify.
@@ -511,7 +556,7 @@ namespace CherryOnTop {
 		void avTypeBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 		void PolicyBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 		void worldBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
-		void numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e);
+	
 		void stepTimerComboBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 
 		vector<vector<double>> BitmapToVector(Bitmap^ bmapPtr, vector<double>& start);

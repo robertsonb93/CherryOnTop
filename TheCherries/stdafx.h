@@ -29,7 +29,7 @@
 
 //You can uncomment any these if they are considered stable/final
 
-////Auxilliary classes
+////Auxiliary classes
 #include "PerformanceStats.h"
 #include "StateTransition.h"
 #include "HashVecDoubles.h"
@@ -40,7 +40,7 @@
 //
 ////World Classes
 //#include "GridWorldBase.h"
-//#include "WorldBase.h"
+#include "WorldBase.h"
 //#include "TraditionalMaze.h"
 //
 ////ActionValue Classes
