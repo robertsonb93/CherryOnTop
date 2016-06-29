@@ -205,7 +205,7 @@ double ModelBasedLearning::Update(const StateTransition& transition)
 	return i;
 }
 
-PerformanceStats ModelBasedLearning::GetStats()
+PerformanceStats& ModelBasedLearning::GetStats()
 {
 	return stats;
 }

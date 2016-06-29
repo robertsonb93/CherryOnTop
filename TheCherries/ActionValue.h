@@ -20,7 +20,7 @@
 		 virtual double Value(const std::vector<double>& state, const std::vector<double>& action) = 0;
 		 virtual vector<double> Value(const std::vector<double>& state, const std::vector<vector<double>>& actions) = 0;
 		 virtual double Update(const StateTransition & transition) = 0;
-		 virtual PerformanceStats GetStats() = 0;
+		 virtual PerformanceStats& GetStats() = 0;
 		 virtual void SetStats(PerformanceStats& PS) = 0;
 
 		//Members//
