@@ -631,7 +631,7 @@ namespace CherryOnTop {
 		void resetLearner();
 		void resetCounters();
 
-
+		void SetWorld();
 		void ChartNewSeries();
 		ActionValue* getAVBox();
 		PolicyBase* getPolicyBox();
