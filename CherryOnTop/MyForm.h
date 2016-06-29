@@ -18,10 +18,16 @@
 #include "../TheCherries/TraditionalMaze.h"
 
 
-typedef TraditionalMaze _DefaultWorld;
+//Interpretors
+#include "../TheCherries/TraditionalMazeInterpretor.h"
 
 
-//The function and member declarations are at the bottom below all the windows form initilization
+typedef TraditionalMazeInterpretor _DefaultInterpretor;//Note that the interpretor contains the world
+typedef QLearning _DefaultAVType;
+// typedef  EpsilonGreedy _DefaultPolicyType;
+
+
+//The function and member declarations are at the bottom below all the windows form initialization
 namespace CherryOnTop {
 
 	using namespace System;
@@ -45,15 +51,17 @@ namespace CherryOnTop {
 			pictureBox1->Paint += gcnew PaintEventHandler(this, &MyForm::pictureBox1Paint);
 			resetCounters();
 
-			avTypeBox->DataSource = Enum::GetNames(actionValuesEnum::typeid); //This will populate the actionvalue list
+			avTypeBox->DataSource = Enum::GetNames(actionValuesEnum::typeid); //This will populate the action value list
 			PolicyBox->DataSource = Enum::GetNames(policyEnum::typeid);
 			worldBox->DataSource = Enum::GetNames(worldEnum::typeid);
 
 			PolicyBox->Enabled = false;//Turns the buttons off, will turn them on when a world is chosen.
 			avTypeBox->Enabled = false;
-			//
-			//TODO: Add the constructor code here
-			//
+
+			agentPtr->setInterpretor(new _DefaultInterpretor(4));
+			agentPtr->setActionValue(new _DefaultAVType(agentPtr->GetAvailAction()));
+			agentPtr->setPolicy(new _DefaultPolicyType());
+
 		}
 
 	protected:
@@ -96,6 +104,15 @@ namespace CherryOnTop {
 	private: System::Windows::Forms::Label^  stepStopLabel;
 	private: System::Windows::Forms::Label^  label8;
 	private: System::Windows::Forms::ComboBox^  stepTimerComboBox;
+	private: System::Windows::Forms::CheckBox^  policyChangeCheckbox2;
+
+	private: System::Windows::Forms::CheckBox^  aVChangeCheckBox;
+	private: System::Windows::Forms::Label^  label9;
+	private: System::Windows::Forms::CheckBox^  policyChangeCheckBox;
+
+	private: System::Windows::Forms::Label^  label10;
+	private: System::Windows::Forms::CheckBox^  worldChangecheckBox;
+	private: System::Windows::Forms::CheckBox^  worldChangeCheckBox2;
 
 
 
@@ -116,15 +133,15 @@ namespace CherryOnTop {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-			System::Windows::Forms::DataVisualization::Charting::Legend^  legend1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
-			System::Windows::Forms::DataVisualization::Charting::Series^  series1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
-			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea2 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-			System::Windows::Forms::DataVisualization::Charting::Legend^  legend2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
-			System::Windows::Forms::DataVisualization::Charting::Series^  series2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
-			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea3 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-			System::Windows::Forms::DataVisualization::Charting::Legend^  legend3 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
-			System::Windows::Forms::DataVisualization::Charting::Series^  series3 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea7 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+			System::Windows::Forms::DataVisualization::Charting::Legend^  legend7 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+			System::Windows::Forms::DataVisualization::Charting::Series^  series7 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea8 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+			System::Windows::Forms::DataVisualization::Charting::Legend^  legend8 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+			System::Windows::Forms::DataVisualization::Charting::Series^  series8 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea9 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+			System::Windows::Forms::DataVisualization::Charting::Legend^  legend9 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+			System::Windows::Forms::DataVisualization::Charting::Series^  series9 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 			this->runButton = (gcnew System::Windows::Forms::Button());
 			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
 			this->stepStop = (gcnew System::Windows::Forms::NumericUpDown());
@@ -151,6 +168,13 @@ namespace CherryOnTop {
 			this->stepStopLabel = (gcnew System::Windows::Forms::Label());
 			this->label8 = (gcnew System::Windows::Forms::Label());
 			this->stepTimerComboBox = (gcnew System::Windows::Forms::ComboBox());
+			this->policyChangeCheckbox2 = (gcnew System::Windows::Forms::CheckBox());
+			this->aVChangeCheckBox = (gcnew System::Windows::Forms::CheckBox());
+			this->label9 = (gcnew System::Windows::Forms::Label());
+			this->policyChangeCheckBox = (gcnew System::Windows::Forms::CheckBox());
+			this->label10 = (gcnew System::Windows::Forms::Label());
+			this->worldChangecheckBox = (gcnew System::Windows::Forms::CheckBox());
+			this->worldChangeCheckBox2 = (gcnew System::Windows::Forms::CheckBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->stepStop))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chartCumulativeReward))->BeginInit();
@@ -189,7 +213,6 @@ namespace CherryOnTop {
 			this->stepStop->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			this->stepStop->ThousandsSeparator = true;
 			this->stepStop->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2000, 0, 0, 0 });
-			this->stepStop->ValueChanged += gcnew System::EventHandler(this, &MyForm::numericUpDown1_ValueChanged);
 			// 
 			// checkBox1
 			// 
@@ -294,51 +317,51 @@ namespace CherryOnTop {
 			// 
 			this->chartCumulativeReward->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
 				| System::Windows::Forms::AnchorStyles::Right));
-			chartArea1->Name = L"ChartArea1";
-			this->chartCumulativeReward->ChartAreas->Add(chartArea1);
-			legend1->Name = L"Legend1";
-			this->chartCumulativeReward->Legends->Add(legend1);
+			chartArea7->Name = L"ChartArea1";
+			this->chartCumulativeReward->ChartAreas->Add(chartArea7);
+			legend7->Name = L"Legend1";
+			this->chartCumulativeReward->Legends->Add(legend7);
 			this->chartCumulativeReward->Location = System::Drawing::Point(14, 234);
 			this->chartCumulativeReward->Name = L"chartCumulativeReward";
-			series1->ChartArea = L"ChartArea1";
-			series1->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
-			series1->Legend = L"Legend1";
-			series1->Name = L"0";
-			this->chartCumulativeReward->Series->Add(series1);
-			this->chartCumulativeReward->Size = System::Drawing::Size(555, 150);
+			series7->ChartArea = L"ChartArea1";
+			series7->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+			series7->Legend = L"Legend1";
+			series7->Name = L"0";
+			this->chartCumulativeReward->Series->Add(series7);
+			this->chartCumulativeReward->Size = System::Drawing::Size(696, 150);
 			this->chartCumulativeReward->TabIndex = 14;
 			this->chartCumulativeReward->Text = L"Cumulative Reward";
 			// 
 			// chartModelUse
 			// 
-			chartArea2->Name = L"ChartArea1";
-			this->chartModelUse->ChartAreas->Add(chartArea2);
-			legend2->Name = L"Legend1";
-			this->chartModelUse->Legends->Add(legend2);
+			chartArea8->Name = L"ChartArea1";
+			this->chartModelUse->ChartAreas->Add(chartArea8);
+			legend8->Name = L"Legend1";
+			this->chartModelUse->Legends->Add(legend8);
 			this->chartModelUse->Location = System::Drawing::Point(15, 390);
 			this->chartModelUse->Name = L"chartModelUse";
-			series2->ChartArea = L"ChartArea1";
-			series2->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
-			series2->Legend = L"Legend1";
-			series2->Name = L"0";
-			this->chartModelUse->Series->Add(series2);
+			series8->ChartArea = L"ChartArea1";
+			series8->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+			series8->Legend = L"Legend1";
+			series8->Name = L"0";
+			this->chartModelUse->Series->Add(series8);
 			this->chartModelUse->Size = System::Drawing::Size(555, 150);
 			this->chartModelUse->TabIndex = 15;
 			this->chartModelUse->Text = L"chart2";
 			// 
 			// chartStepsToGoal
 			// 
-			chartArea3->Name = L"ChartArea1";
-			this->chartStepsToGoal->ChartAreas->Add(chartArea3);
-			legend3->Name = L"Legend1";
-			this->chartStepsToGoal->Legends->Add(legend3);
+			chartArea9->Name = L"ChartArea1";
+			this->chartStepsToGoal->ChartAreas->Add(chartArea9);
+			legend9->Name = L"Legend1";
+			this->chartStepsToGoal->Legends->Add(legend9);
 			this->chartStepsToGoal->Location = System::Drawing::Point(12, 546);
 			this->chartStepsToGoal->Name = L"chartStepsToGoal";
-			series3->ChartArea = L"ChartArea1";
-			series3->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
-			series3->Legend = L"Legend1";
-			series3->Name = L"0";
-			this->chartStepsToGoal->Series->Add(series3);
+			series9->ChartArea = L"ChartArea1";
+			series9->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+			series9->Legend = L"Legend1";
+			series9->Name = L"0";
+			this->chartStepsToGoal->Series->Add(series9);
 			this->chartStepsToGoal->Size = System::Drawing::Size(555, 150);
 			this->chartStepsToGoal->TabIndex = 16;
 			this->chartStepsToGoal->Text = L"chart3";
@@ -431,11 +454,97 @@ namespace CherryOnTop {
 			this->stepTimerComboBox->Text = L"Use Steps&Timer";
 			this->stepTimerComboBox->SelectedIndexChanged += gcnew System::EventHandler(this, &MyForm::stepTimerComboBox_SelectedIndexChanged);
 			// 
+			// policyChangeCheckbox2
+			// 
+			this->policyChangeCheckbox2->AutoSize = true;
+			this->policyChangeCheckbox2->Checked = true;
+			this->policyChangeCheckbox2->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->policyChangeCheckbox2->Location = System::Drawing::Point(619, 142);
+			this->policyChangeCheckbox2->Name = L"policyChangeCheckbox2";
+			this->policyChangeCheckbox2->Size = System::Drawing::Size(91, 17);
+			this->policyChangeCheckbox2->TabIndex = 26;
+			this->policyChangeCheckbox2->Text = L"PolicyChange";
+			this->policyChangeCheckbox2->UseVisualStyleBackColor = true;
+			this->policyChangeCheckbox2->CheckedChanged += gcnew System::EventHandler(this, &MyForm::policyChangeCheckbox2_CheckedChanged);
+			// 
+			// aVChangeCheckBox
+			// 
+			this->aVChangeCheckBox->AutoSize = true;
+			this->aVChangeCheckBox->Checked = true;
+			this->aVChangeCheckBox->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->aVChangeCheckBox->Location = System::Drawing::Point(622, 65);
+			this->aVChangeCheckBox->Name = L"aVChangeCheckBox";
+			this->aVChangeCheckBox->Size = System::Drawing::Size(77, 17);
+			this->aVChangeCheckBox->TabIndex = 27;
+			this->aVChangeCheckBox->Text = L"AVChange";
+			this->aVChangeCheckBox->UseVisualStyleBackColor = true;
+			// 
+			// label9
+			// 
+			this->label9->AutoSize = true;
+			this->label9->Location = System::Drawing::Point(619, 126);
+			this->label9->Name = L"label9";
+			this->label9->Size = System::Drawing::Size(91, 13);
+			this->label9->TabIndex = 28;
+			this->label9->Text = L"Reset Learner On";
+			// 
+			// policyChangeCheckBox
+			// 
+			this->policyChangeCheckBox->AutoSize = true;
+			this->policyChangeCheckBox->Checked = true;
+			this->policyChangeCheckBox->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->policyChangeCheckBox->Location = System::Drawing::Point(622, 42);
+			this->policyChangeCheckBox->Name = L"policyChangeCheckBox";
+			this->policyChangeCheckBox->Size = System::Drawing::Size(91, 17);
+			this->policyChangeCheckBox->TabIndex = 29;
+			this->policyChangeCheckBox->Text = L"PolicyChange";
+			this->policyChangeCheckBox->UseVisualStyleBackColor = true;
+			// 
+			// label10
+			// 
+			this->label10->AutoSize = true;
+			this->label10->Location = System::Drawing::Point(619, 23);
+			this->label10->Name = L"label10";
+			this->label10->Size = System::Drawing::Size(83, 13);
+			this->label10->TabIndex = 30;
+			this->label10->Text = L"Reset Agent On";
+			// 
+			// worldChangecheckBox
+			// 
+			this->worldChangecheckBox->AutoSize = true;
+			this->worldChangecheckBox->Checked = true;
+			this->worldChangecheckBox->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->worldChangecheckBox->Location = System::Drawing::Point(622, 88);
+			this->worldChangecheckBox->Name = L"worldChangecheckBox";
+			this->worldChangecheckBox->Size = System::Drawing::Size(91, 17);
+			this->worldChangecheckBox->TabIndex = 31;
+			this->worldChangecheckBox->Text = L"WorldChange";
+			this->worldChangecheckBox->UseVisualStyleBackColor = true;
+			// 
+			// worldChangeCheckBox2
+			// 
+			this->worldChangeCheckBox2->AutoSize = true;
+			this->worldChangeCheckBox2->Checked = true;
+			this->worldChangeCheckBox2->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->worldChangeCheckBox2->Location = System::Drawing::Point(619, 165);
+			this->worldChangeCheckBox2->Name = L"worldChangeCheckBox2";
+			this->worldChangeCheckBox2->Size = System::Drawing::Size(91, 17);
+			this->worldChangeCheckBox2->TabIndex = 32;
+			this->worldChangeCheckBox2->Text = L"WorldChange";
+			this->worldChangeCheckBox2->UseVisualStyleBackColor = true;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(584, 702);
+			this->ClientSize = System::Drawing::Size(725, 702);
+			this->Controls->Add(this->worldChangeCheckBox2);
+			this->Controls->Add(this->worldChangecheckBox);
+			this->Controls->Add(this->label10);
+			this->Controls->Add(this->policyChangeCheckBox);
+			this->Controls->Add(this->label9);
+			this->Controls->Add(this->aVChangeCheckBox);
+			this->Controls->Add(this->policyChangeCheckbox2);
 			this->Controls->Add(this->stepTimerComboBox);
 			this->Controls->Add(this->label8);
 			this->Controls->Add(this->stepStopLabel);
@@ -478,7 +587,7 @@ namespace CherryOnTop {
 
 	private:
 		//Runtime Members ARE HERE//
-		GridWorldBase* world = new _DefaultWorld(); //Can point to any type of world. In the form though, we only want Gridworld
+		GridWorldBase* worldPtr = nullptr; //Can point to any type of world. In the form though, we only want Gridworld
 		AgentBase* agentPtr = new _DefaultAgentType();
 
 		Bitmap^ bmap = nullptr; //Will be used for holding onto a modifiable bitmap of the displayed image, since the picbox->image, cant modify.
@@ -510,15 +619,19 @@ namespace CherryOnTop {
 		void runButton_Click(System::Object^  sender, System::EventArgs^  e);
 		void avTypeBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 		void PolicyBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
-		void worldBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
-		void numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e);
+		void worldBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);	
 		void stepTimerComboBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 
 		vector<vector<double>> BitmapToVector(Bitmap^ bmapPtr, vector<double>& start);
 		void VectorToBitmap(Bitmap^ bmpPtr, const vector<vector<double>>& vecMap);
 		void pictureBox1Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e);
 		void LoadMapFromFileName(System::String^ ofd);
+
+		void resetAgent();
+		void resetLearner();
 		void resetCounters();
+
+		void SetWorld();
 		void ChartNewSeries();
 		ActionValue* getAVBox();
 		PolicyBase* getPolicyBox();
@@ -528,6 +641,8 @@ namespace CherryOnTop {
 
 
 
+private: System::Void policyChangeCheckbox2_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+}
 };
 }
 #pragma endregion

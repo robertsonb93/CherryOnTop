@@ -18,7 +18,7 @@
 		 double Value(const vector<double>& state, const vector<double>& action);
 		 vector<double> Value(const vector<double>& state, const vector<vector<double>>& actions);
 		 double Update(const StateTransition & transition);
-		 PerformanceStats GetStats();
+		 PerformanceStats& GetStats();
 		 void SetStats(PerformanceStats& PS);
 
 

@@ -3,7 +3,7 @@
 
 
 
-StateTransition::StateTransition(const vector<double>& OS, const vector<double>& NS, vector<double>& act,double rwrd, bool SessionHasEnded)
+StateTransition::StateTransition(const vector<double>& OS, const vector<double>& NS,const vector<double>& act,double rwrd, bool SessionHasEnded)
 	: oldState(OS), newState(NS), reward(rwrd), action(act), absorbingStateReached(SessionHasEnded) //This is MEMBER INIT LIST, to set the consts
 {};
 

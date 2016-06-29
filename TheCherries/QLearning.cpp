@@ -98,7 +98,7 @@ double QLearning::Update(const StateTransition& transition)
 	return abs(*OS_Ptr - q_s_a);
 };
 
-PerformanceStats QLearning::GetStats() 
+PerformanceStats& QLearning::GetStats() 
 {
 	return stats;
 }
