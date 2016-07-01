@@ -3,6 +3,7 @@
 //Learners
 #include "../TheCherries/QLearning.h"
 #include "../TheCherries/ModelBasedLearning.h"
+#include "../TheCherries/ModelBasedEgoAlo.h"
 
 //Auxiliaries
 #include "../TheCherries/AgentSingle.h"
@@ -16,10 +17,12 @@
 
 //Worlds
 #include "../TheCherries/TraditionalMaze.h"
+#include "../TheCherries/EgoAloMaze.h"
 
 
 //Interpretors
 #include "../TheCherries/TraditionalMazeInterpretor.h"
+#include "../TheCherries/EgoAloMazeInterpretor.h"
 
 
 typedef TraditionalMazeInterpretor _DefaultInterpretor;//Note that the interpretor contains the world
@@ -589,10 +592,9 @@ namespace CherryOnTop {
 		//Runtime Members ARE HERE//
 		GridWorldBase* worldPtr = nullptr; //Can point to any type of world. In the form though, we only want Gridworld
 		AgentBase* agentPtr = new _DefaultAgentType();
-
 		Bitmap^ bmap = nullptr; //Will be used for holding onto a modifiable bitmap of the displayed image, since the picbox->image, cant modify.
 
-		
+		int egoSize = 0;
 		//System::TimeSpan^ stopAtThisTime;
 		System::TimeSpan cumulativeTime;
 		int cumulativeIterations;
@@ -608,9 +610,9 @@ namespace CherryOnTop {
 		OpenFileDialog activeFile;
 		PerformanceStats* perfStats = nullptr;
 
-		enum class actionValuesEnum { ActionValue, ModelBased, QLearning };
+		enum class actionValuesEnum { ActionValue,ModelBased, ModelBasedEgoAlo, QLearning };
 		enum class policyEnum {Policy, EpsilonGreedy, Optimal, Softmax };
-		enum class worldEnum {World, TraditionalMaze_4, TraditionalMaze_8 };
+		enum class worldEnum {World, TraditionalMaze_4, TraditionalMaze_8, EgoAloMaze_4, EgoAloMaze_8};
 		
 	
 	//RUNTIME FUNCTIONS ARE DOWN HERE//

@@ -23,6 +23,9 @@ TraditionalMaze::~TraditionalMaze()
 
 //Performs a step by the agent, 
 //By-product, will also add any newly discovered states to the Vector of previously vistedState
+//Parameters are the action desired be performed
+//The state the agent is currently in
+//The Perfstats that will be updated by the world, and returned back to the agent.
 StateTransition TraditionalMaze::PerformStep(const vector<double>& action, const vector<double>& state,PerformanceStats& PerfStats)
 {
 
@@ -82,16 +85,6 @@ StateTransition TraditionalMaze::PerformStep(const vector<double>& action, const
 			}
 		}
 
-		/*	for each (vector<double> agentLoc in currLocations)
-			{
-				if (agentLoc == state)
-				{
-					agentLoc[0] = newState[0];
-					agentLoc[1] = newState[1];
-					newStateSeen = false;
-				}
-			}
-	*/
 		if (newStateSeen)
 			currLocations.push_back(newState);//We are seeing a new agent, possibly one that was overlapped onto another. 
 		

@@ -165,11 +165,14 @@
     <ClInclude Include="AgentBase.h" />
     <ClInclude Include="AgentMulti.h" />
     <ClInclude Include="AgentSingle.h" />
+    <ClInclude Include="EgoAloMaze.h" />
+    <ClInclude Include="EgoAloMazeInterpretor.h" />
     <ClInclude Include="EpsilonGreedy.h" />
     <ClInclude Include="GridWorldBase.h" />
     <ClInclude Include="HashVecDoubles.h" />
     <ClInclude Include="InterpretorBase.h" />
     <ClInclude Include="ModelBasedBase.h" />
+    <ClInclude Include="ModelBasedEgoAlo.h" />
     <ClInclude Include="ModelBasedLearning.h" />
     <ClInclude Include="ModelFreeBase.h" />
     <ClInclude Include="OptimalPolicy.h" />
@@ -187,7 +190,10 @@
   <ItemGroup>
     <ClCompile Include="AgentMulti.cpp" />
     <ClCompile Include="AgentSingle.cpp" />
+    <ClCompile Include="EgoAloMaze.cpp" />
+    <ClCompile Include="EgoAloMazeInterpretor.cpp" />
     <ClCompile Include="EpsilonGreedy.cpp" />
+    <ClCompile Include="ModelBasedEgoAlo.cpp" />
     <ClCompile Include="ModelBasedLearning.cpp" />
     <ClCompile Include="OptimalPolicy.cpp" />
     <ClCompile Include="PerformanceStats.cpp" />

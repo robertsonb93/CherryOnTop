@@ -358,6 +358,11 @@ ActionValue* CherryOnTop::MyForm::getAVBox()
 {
 	switch (avTypeBox->SelectedIndex)
 	{
+	case(int)actionValuesEnum::ActionValue:
+	{
+		return nullptr;
+	}
+	
 	case (int)actionValuesEnum::QLearning:
 	{
 		return new QLearning(agentPtr->GetAvailAction());
@@ -365,6 +370,10 @@ ActionValue* CherryOnTop::MyForm::getAVBox()
 	case (int)actionValuesEnum::ModelBased:
 	{
 		return new ModelBasedLearning(agentPtr->GetAvailAction(),agentPtr->GetState());
+	}
+	case(int)actionValuesEnum::ModelBasedEgoAlo:
+	{
+		return new ModelBasedEgoAlo(agentPtr->GetAvailAction(),agentPtr->GetState(), egoSize);
 	}
 	default: return  nullptr; //Nullptr, causes default choices from the agent. (Probably Q-Learning)
 	}
@@ -463,19 +472,41 @@ void CherryOnTop::MyForm::SetWorld()
 {
 	switch (worldBox->SelectedIndex)
 	{
+	case (int)worldEnum::World:
+		{
+			worldPtr = (TraditionalMaze*)agentPtr->setInterpretor(new _DefaultInterpretor(4));
+			egoSize = 0;
+			break;
+		}
 	case (int)worldEnum::TraditionalMaze_4:
 	{
 		worldPtr = (TraditionalMaze*)agentPtr->setInterpretor(new TraditionalMazeInterpretor(4));
+		egoSize = 0;
 		break;
 	}
 	case (int)worldEnum::TraditionalMaze_8:
 	{
 		worldPtr = (TraditionalMaze*)agentPtr->setInterpretor(new TraditionalMazeInterpretor(8));
+		egoSize = 0;
 		break;
+	}
+	case(int)worldEnum::EgoAloMaze_4:
+	{
+		worldPtr = (EgoAloMaze*)agentPtr->setInterpretor((new EgoAloMazeInterpretor(4)));
+		egoSize = 9;
+		break;
+	}
+	case(int)worldEnum::EgoAloMaze_8:
+	{
+		worldPtr = (EgoAloMaze*)agentPtr->setInterpretor((new EgoAloMazeInterpretor(8)));
+	egoSize = 9;
+	break;
+	
 	}
 	default:
 	{
 		worldPtr = (TraditionalMaze*)agentPtr->setInterpretor(new _DefaultInterpretor(4));
+		egoSize = 0;
 	}
 	}
 	if (System::IO::File::Exists(activeFile.FileName))

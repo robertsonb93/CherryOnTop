@@ -123,6 +123,15 @@
     <ClInclude Include="TraditionalMazeInterpretor.h">
       <Filter>Header Files\Interpretors</Filter>
     </ClInclude>
+    <ClInclude Include="EgoAloMaze.h">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelBasedEgoAlo.h">
+      <Filter>Header Files\ActionValue</Filter>
+    </ClInclude>
+    <ClInclude Include="EgoAloMazeInterpretor.h">
+      <Filter>Header Files\Interpretors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PerformanceStats.cpp">
@@ -157,6 +166,15 @@
     </ClCompile>
     <ClCompile Include="AgentMulti.cpp">
       <Filter>Source Files\Agent</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelBasedEgoAlo.cpp">
+      <Filter>Source Files\ActionValue</Filter>
+    </ClCompile>
+    <ClCompile Include="EgoAloMaze.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="EgoAloMazeInterpretor.cpp">
+      <Filter>Source Files\Interpretors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
