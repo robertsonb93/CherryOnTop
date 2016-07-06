@@ -16,6 +16,8 @@ EgoAloMaze::EgoAloMaze(int numActions )
 		startState.assign(egoSize, 0);
 		startState.push_back(1);
 		startState.push_back(1);
+		aloStartState.push_back(1);
+		aloStartState.push_back(1);
 }
 
 
@@ -54,18 +56,20 @@ GridWorldBase::mazeType EgoAloMaze::ShowState()
 //Sets up the MapBMP inherited from GridworldBase
 //The Form will have to provide each position, and the value for it(from enumerated types)
 //Will have to make sure the Agent loads the start state from startState after this point.
-void EgoAloMaze::Load(mazeType inMap, vector<double> start)
+void EgoAloMaze::Load(mazeType inMap, vector<double>& start)
 {
 	mapBMP = inMap;
+	aloStartState = start;
 	startState = GetEgo(start[0], start[1]);
 	for each(auto x in start)
 		startState.push_back(x);
 	
-	mapBMP[(int)start[0]][(int)start[1]] = openSpace;//Notice marking the starting position as white with the map that is kept by TradMaze
+	mapBMP[(int)start[0]][(int)start[1]] = openSpace;//Notice marking the starting position as white with the map that is kept by egoaloMaze
 
-	currLocations.push_back(vector<double> {start[0], start[1]});//We are pushing the the starting location as the agents currlocation
+	currLocations.push_back(aloStartState);//We are pushing the the starting location as the agents currlocation
 
 	visitedStates.clear();
+	start = startState;
 
 }
 
@@ -99,11 +103,9 @@ StateTransition EgoAloMaze::PerformStep(const vector<double>& Action, const vect
 	if (state.size() < numEgoStates)
 		numEgoStates = 0;
 	vector<double> Alostate(state.begin() + numEgoStates, state.end());//This gives the alocentric state, based on number of states in 
-
+	vector<double> newAloState(Alostate);
 
 	SeenState(Alostate);//Will auto-check and add a state if it has not yet been seen
-
-	int newY, newX;
 
 	vector<double> newState;
 	double reward = 0;
@@ -116,13 +118,13 @@ StateTransition EgoAloMaze::PerformStep(const vector<double>& Action, const vect
 	{
 	case openSpace: //Open space
 	{
-		newY = Alostate[0] + Action[0];
-		newX = Alostate[1] + Action[1];
-		vector<double> egoVect = GetEgo(newY, newX);
+		newAloState[0] = Alostate[0] + Action[0];
+		newAloState[1] = Alostate[1] + Action[1];
+		vector<double> egoVect = GetEgo(newAloState[0], newAloState[1]);
 		newState.assign(egoVect.begin(),egoVect.end());
 		//Now assign the Alocentric
-		newState.push_back(newY);
-		newState.push_back(newX);
+		newState.push_back(newAloState[0]);
+		newState.push_back(newAloState[1]);
 		reward = openSpaceRwrd;
 		break;
 	}
@@ -137,22 +139,24 @@ StateTransition EgoAloMaze::PerformStep(const vector<double>& Action, const vect
 	}
 	case lava:
 	{
-		newY = Alostate[0] + Action[0];
-		newX = Alostate[1] + Action[1];
-		vector<double> egoVect = GetEgo(newY, newX);
+		newAloState[0] = Alostate[0] + Action[0];
+		newAloState[1] = Alostate[1] + Action[1];
+		vector<double> egoVect = GetEgo(newAloState[0], newAloState[1]);
 		newState.assign(egoVect.begin(), egoVect.end());
 
-		newState.push_back(newY);
-		newState.push_back(newX);
+		newState.push_back(newAloState[0]);
+		newState.push_back(newAloState[1]);
 		reward = lavaRwrd;
 		break;
 	}
 	case goal:
 	{
-		vector<double> egoVect = GetEgo(startState[0], startState[1]);
+		vector<double> egoVect = GetEgo(aloStartState[0], aloStartState[1]);
 		newState.assign(egoVect.begin(), egoVect.end());
-		for each(auto x in startState)
+		for each(auto x in aloStartState)
 			newState.push_back(x);
+
+		newAloState = aloStartState;
 		reward = goalRwrd;
 		absorbingStateReached = true;
 		break;
@@ -166,24 +170,18 @@ StateTransition EgoAloMaze::PerformStep(const vector<double>& Action, const vect
 
 	for (int i = 0; i < currLocations.size(); i++)
 	{
-		if (currLocations[i] == Alostate)
+		if (currLocations[i] ==Alostate)
 		{
-			currLocations[i][0] = newState[0];
-			currLocations[i][1] = newState[1];
+			currLocations[i] = newAloState;
 			newStateSeen = false;
 		}
 	}
 
 	if (newStateSeen)
-		currLocations.push_back(newState);//We are seeing a new agent, possibly one that was overlapped onto another. 
-	
-	//Lastly we need the oldEgo state to put it into the transition.
-	vector<double> oldstate = GetEgo(Alostate[0], Alostate[1]);
-	oldstate.push_back(Alostate[0]);
-	oldstate.push_back(Alostate[1]);
+		currLocations.push_back(newAloState);//We are seeing a new agent, possibly one that was overlapped onto another. 
 
 	perfStats.TallyStepsToGoal(reward == goalRwrd);//Update the performance Stats
-	return StateTransition(oldstate, newState, Action, reward, absorbingStateReached);//Return a new transition
+	return StateTransition(state, newState, Action, reward, absorbingStateReached);//Return a new transition
 }
 
 vector<vector<double>> EgoAloMaze::GetVisitedStates()

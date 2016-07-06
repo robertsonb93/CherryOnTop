@@ -30,7 +30,7 @@
 		 virtual int GetMap(int x, int y) =0;
 		 virtual int GetHeight() { return mapBMP[0].size(); };
 		 virtual int GetWidth() { return mapBMP.size(); };	 
-		 virtual void Load(mazeType inMap, vector<double> start) = 0;
+		 virtual void Load(mazeType inMap, vector<double>& start) = 0;
 
 
 		 //Would be accessed by the Agent

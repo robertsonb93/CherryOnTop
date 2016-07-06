@@ -4,25 +4,25 @@
 
 ModelBasedEgoAlo::ModelBasedEgoAlo(const vector<vector<double>>& AvailActions, const vector<double>& StartState, const int EgoSize)
 	:egoSize(EgoSize), availableActions(AvailActions), startState(StartState), aloLearner(AvailActions, StartState),
-	rewardPredictionModel(ModelBasedLearning(AvailActions, StartState, defQ, 0, maxUps))
+	rewardPredictionModel(ModelBasedLearning(AvailActions, StartState, 0, 0, 120))
 {
 	//Properly size the aloFeaturePrediction vector, we are creating a model for each feature of the alo state space. Plus one of the reward prediction
 	//Notice the gamma set to 0
 	for (int i = egoSize; i < startState.size(); i++)
-		aloFeaturePredictionModels.push_back(ModelBasedLearning(AvailActions, StartState, defQ, 0, maxUps));
+		aloFeaturePredictionModels.push_back(ModelBasedLearning(AvailActions, StartState, 10, 0, 120));
 	visitedStates.resize(AvailActions.size());
 	
 
 };
 
 ModelBasedEgoAlo::ModelBasedEgoAlo(const vector<vector<double>>& AvailActions, const vector<double>& StartState, const int EgoSize, double DefQ, double gam, int MaxUps)
-	: egoSize(EgoSize), availableActions(AvailActions), startState(StartState), aloLearner(AvailActions, StartState, DefQ, gam, maxUps),
-	rewardPredictionModel(ModelBasedLearning(AvailActions,StartState,defQ,0,maxUps)) , gamma(gam), defQ(DefQ), maxUps(MaxUps)
+	: egoSize(EgoSize), availableActions(AvailActions), startState(StartState), aloLearner(AvailActions, StartState, DefQ, gam, MaxUps),
+	rewardPredictionModel(ModelBasedLearning(AvailActions,StartState,DefQ,0,MaxUps)) , gamma(gam), defQ(DefQ), maxUps(MaxUps)
 {
 	//Properly size the aloFeaturePrediction vector
 	//Notice the gamma set to 0
 	for (int i = egoSize; i < startState.size(); i++)
-		aloFeaturePredictionModels.push_back(ModelBasedLearning(AvailActions, StartState, defQ, 0, maxUps));
+		aloFeaturePredictionModels.push_back(ModelBasedLearning(AvailActions, StartState, DefQ, 0, MaxUps));
 	visitedStates.resize(AvailActions.size());
 };
 
@@ -85,49 +85,76 @@ double ModelBasedEgoAlo::Update(const StateTransition & transition)
 	steps++;
 	auto oldState= transition.getOldState();
 	auto newState = transition.getNewState();
+	auto action = transition.getAction();
 
 		const auto egoOldBegin = oldState.begin();
 		const auto egoNewBegin = newState.begin();
 		const auto aloOldBegin = egoOldBegin + egoSize;
 		const auto aloNewBegin = egoNewBegin + egoSize;
 
-	//Firstly we will get the respective ego and alo state from the transition which contains the state(ego&alo)
+	//Firstly we will get the respective ego and alo state from the transition which contains the state(ego & alo)
 	//Will use iterators to use a copy constructor for each of the different states.
 	stateType egoOldState(egoOldBegin, aloOldBegin);//The copy goes up to but not including the last iterator. 
 	stateType egoNewState(egoNewBegin, aloNewBegin);
 	stateType alloOldState(aloOldBegin,oldState.end());
 	stateType alloNewState(aloNewBegin, newState.end());
 
-	updatePredictionModels(egoOldState,transition.getAction(),alloOldState,alloNewState,transition.getReward());
-	aloLearner.Update(StateTransition(alloOldState, alloNewState, transition.getAction(), transition.getReward()));
+	updatePredictionModels(egoOldState,action,alloOldState,alloNewState,transition.getReward());
+	//Ensure that we have the count in the visited Ego states, emplace will insert it if it is not already there. Else will return an iterator to it.
+	auto actIter = visitedEgoStates.emplace(action, unordered_map<stateType, int>()).first;
+	actIter->second.emplace(egoOldState, 0).first->second++;//We are incrementing the number of times we have seen this ego state from the given action. 
 	
-	//TODO: Can we make this faster? Consider looking into some iterators for look ups we do multiple times
+
+	aloLearner.Update(StateTransition(alloOldState, alloNewState, action, transition.getReward()));
+	
+	//TODO: Can we make this faster? Consider looking into some iterators for look ups we do multiple times 
+	PerformanceStats tempStats = aloLearner.GetStats();
 	for (int i = 0; i < availableActions.size(); i++)
 	{
-		auto visitedStateIter = visitedStates[i].second.emplace(alloNewState, 0).first;
+		auto visitedStateIter = visitedStates[i].emplace(alloNewState, 0).first;
 		visitedStateIter->second++; //Regardless of if we have seen before or not, we will increment, so we mark 1, or if not emplaced then whatever was in place.
 
 		if (steps >= minStepsRequired && visitedStateIter->second <= updateTerminationStepCount && egoSize)//Seen enough for worthy update, but not to much for it to be not needed
 		{			
 			auto currAct = availableActions[i];
-			double predReward(rewardPredictionModel.Value(egoNewState, currAct));
-			stateType predictedAlo(alloNewState);
-			for (int j = 0; j < aloFeaturePredictionModels.size(); j++)
-				predictedAlo[j] += aloFeaturePredictionModels[j].Value(egoNewState, currAct);//Get all the predicted changes for each alocentric feature
-			
-			aloLearner.Update(StateTransition(alloNewState, predictedAlo,currAct, predReward));//TODO: consider modifying the stats of aloLearner, and remove these updates.
+			auto seenAct = visitedEgoStates.find(currAct);
+			if (seenAct != visitedEgoStates.end())
+			{
+				auto seenState = seenAct->second.find(egoNewState);
+				if (seenState != seenAct->second.end() && seenState->second > 1)
+				{
+
+					double predReward(rewardPredictionModel.Value(egoNewState, currAct));
+					stateType predictedAlo(alloNewState);
+					for (int j = 0; j < aloFeaturePredictionModels.size(); j++)
+					{
+						auto val  = aloFeaturePredictionModels[j].Value(egoNewState, currAct);
+						predictedAlo[j] += val;//Get all the predicted changes for each alocentric feature
+					}
+
+					StateTransition t(alloNewState, predictedAlo, currAct, predReward);
+					
+					aloLearner.Update(t);
+					
+				}
+			}
 		}
 	}
+	aloLearner.SetStats((tempStats));
 	return 0.0;
 }
 
-double ModelBasedEgoAlo::Value(const vector<double>& aloState, const vector<double>& action)
+double ModelBasedEgoAlo::Value(const vector<double>& state, const vector<double>& action)
 {
+	//Get the aloState and look it up from the alo learner
+	vector<double> aloState(state.begin() + egoSize, state.end());
 	return aloLearner.Value(aloState, action);
 }
 
-vector<double> ModelBasedEgoAlo::Value(const vector<double>& aloState, const vector<vector<double>>& actions)
+vector<double> ModelBasedEgoAlo::Value(const vector<double>& state, const vector<vector<double>>& actions)
 {
+	//Get the aloState and look it up from the alo learner
+	vector<double> aloState(state.begin() + egoSize, state.end());
 	return aloLearner.Value(aloState, actions);
 }
 
@@ -155,16 +182,16 @@ void ModelBasedEgoAlo::ResetStats()
 //Given the Parameters, will run an update on each of aloFeaturePrediction models so that they may give accurate predictions on how alocentric features with change
 //We will give the each learner its own feature from the alo, and it can reference the egoState, to start learning  what the relationship between egoState
 //And the change in Alostate feature will be.
-inline void ModelBasedEgoAlo::updatePredictionModels(const stateType& oldEgo, const actionType& act, const stateType newAlo, const stateType& oldAlo, const double rew)
+inline void ModelBasedEgoAlo::updatePredictionModels(const stateType& oldEgo, const actionType& act, const stateType& newAlo, const stateType& oldAlo, const double rew)
 {
 	if (egoSize)
 	{
-		stateType dummyNewState = { -1 };
+		stateType dummyNewState = { numeric_limits<double>::lowest() };
 		for (int i = 0; i < aloFeaturePredictionModels.size(); i++)
 		{
 			//It doesn't need to learn of an S' as there is no continuity on the ego side of things, so we give a dummy state. 
 			//The reward is what it is predicting, but reward is actually the feature change.
-			aloFeaturePredictionModels[i].Update(StateTransition(oldEgo, dummyNewState, act, (newAlo[i] - oldAlo[i])));
+			aloFeaturePredictionModels[i].Update(StateTransition(oldEgo, dummyNewState, act, (oldAlo[i] - newAlo[i]) ));
 		}
 		rewardPredictionModel.Update(StateTransition(oldEgo, dummyNewState, act, rew));
 	}

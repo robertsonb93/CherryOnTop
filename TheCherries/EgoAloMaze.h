@@ -19,7 +19,7 @@ public:
 
 	//Accessed by interface/form		
 	mazeType ShowState();
-	void Load(mazeType inMap, vector<double> start);
+	void Load(mazeType inMap, vector<double>& start);
 	void ChangeRwrds(double newOpen, double newWall, double newLava, double newGoal);
 	int GetMap(int x, int y);//Returns the type of tile on the map at the spec position
 	mazeType GetMap();
@@ -39,7 +39,8 @@ private:
 
 
 	//Members//
-	vector<double> startState;
+	vector<double> startState, aloStartState;
+	
 	vector<vector<double>> availableActions;
 	vector<vector<double>> visitedStates; //Each internal vector is a state
 	vector<vector<double>> currLocations; //Will use the seen transitions to try and mark where agents currently are.

@@ -24,7 +24,7 @@ typedef AgentSingle _DefaultAgentType;
 
 		 //Accessed by interface/form		
 		 mazeType ShowState();
-		 void Load(mazeType inMap, vector<double> start);
+		 void Load(mazeType inMap, vector<double>& start);
 		 void ChangeRwrds(double newOpen, double newWall, double newLava, double newGoal);
 		 int GetMap(int x, int y);//Returns the type of tile on the map at the spec position
 		 mazeType GetMap();

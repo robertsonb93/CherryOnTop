@@ -125,7 +125,7 @@ GridWorldBase::mazeType TraditionalMaze::ShowState()
 //Sets up the MapBMP inherited from GridworldBase
 //The Form will have to provide each position, and the value for it(from enumerated types)
 //Will have to make sure the Agent loads the start state from startState after this point.
-void TraditionalMaze::Load(mazeType inMap, vector<double> start)
+void TraditionalMaze::Load(mazeType inMap, vector<double>& start)
 {
 	mapBMP = inMap;
 	startState = start;

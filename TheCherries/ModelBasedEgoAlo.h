@@ -43,7 +43,7 @@ public:
 
 private:
 
-	void updatePredictionModels(const stateType& oldEgo,const actionType& act,const stateType newAlo,const stateType& oldAlo,const double rew);
+	void updatePredictionModels(const stateType& oldEgo,const actionType& act,const stateType& newAlo,const stateType& oldAlo,const double rew);
 
 	//****MEMBERS****//
 	ModelBasedLearning aloLearner,rewardPredictionModel;
@@ -53,7 +53,8 @@ private:
 	vector<vector<double>> availableActions;
 	vector<double> startState; 
 	
-	vector< pair<actionType, unordered_map<stateType, int>>> visitedStates; //Keep track #-times an action has led to an alo-state. 
+	vector<unordered_map<stateType, int>> visitedStates; //Keep track #-times an action has led to an alo-state. 
+	map<actionType,unordered_map<stateType, int>> visitedEgoStates;//Keep Track #-times an action has been seen at an ego state
 	PerformanceStats perfStats;
 
 	int updateTerminationStepCount = 1;
